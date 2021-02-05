@@ -1,25 +1,26 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
 
-body{
+body {
     height: 100%;
     width: 100%;
 }
 
-nav{
+nav {
     background-color: lightblue;
+}
 
-}
-li{
+li {
     float: right;
-  
 }
-ul{
+
+ul {
     list-style-type: none;
 }
-a{
+
+a {
     margin-right: 30px;
     margin-left: 5px;
 }
