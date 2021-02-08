@@ -1,14 +1,51 @@
 <!--
-Projet: 
-Description:
+Projet: Page formulaire de création  post 
+Description: où l'on créé des posts 
 Nom, Prénom: Odaka Michi
 Date: 
 Version: 1.0
 -->
 <?php
 
-?>
 
+// variables
+$nbFiles = 0;
+$typeMedia;
+$nomFichier;
+
+
+
+// Filters 
+
+$commentaire = filter_input(INPUT_POST, 'description',  FILTER_SANITIZE_STRING);
+$dateCreation;
+
+$submit = filter_input(INPUT_POST, 'publier',  FILTER_DEFAULT);
+
+/* if ($nbFiles != 0) {
+    
+    for ($i=0; $i < $nbFiles; $i++) { 
+        $typeMedia = $_FILES['mediaFiles[]']['type'][$i];
+        $nomFichier = $_FILES['mediaFiles[]']['name'][$i];
+     }
+}
+
+echo $nbFiles;
+*/
+
+
+// submit
+if(isset($submit)) {
+
+    // Checker si c'est bien une image (côté server)
+
+    // ajouter les informations dans la BD
+    //createMediaAndPost();
+    // Redirection
+    header("Location: ../index.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 
 <html lang="fr">
@@ -25,8 +62,6 @@ Version: 1.0
 </head>
 
 <body>
-    <!-- header -->
-
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,19 +83,14 @@ Version: 1.0
         </div>
     </nav>
 
-
-
-
-    <section></section>
-    <article></article>
-    <!-- form action= lien method = post/get-->
     <div class="d-flex justify-content-center mt-5 ">
         <form class="w-50">
             <div class="mb-3">
                 <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
             </div>
+            <!-- Image file --> 
             <div class="mb-3">
-                <input type="file" class="form-control" accept="image/*" id="exampleInputEmail1" aria-describedby="emailHelp" multiple>
+                <input type="file" class="form-control" accept="image/*" name="mediaFiles[]"  multiple>
 
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>

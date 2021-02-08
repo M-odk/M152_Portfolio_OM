@@ -22,8 +22,8 @@ Version: 1.0
 </head>
 
 <body>
-    <!-- header -->
 
+       <!--  TODO : links effects when mouse on -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,15 +44,19 @@ Version: 1.0
             </div>
         </div>
     </nav>
-
-
-    <h1 style="text-align: center;">Bienvenu</h1>
+    <!-- 
+        section profile de l'user (sa photo + message de bienvenue)
+        source : https://bbbootstrap.com/snippets/bootstrap-sidebar-user-profile-62301382
+        - message de  bienvenue -
+        TODO : animation or other for a better renderer
+        -->
+    <h1 style="text-align: center;">Bienvenu à toi !</h1>
     <div class="container mt-5 d-flex justify-content-center">
         <div class="card p-3">
             <div class="d-flex align-items-center">
                 <div class="image"> <img src="img/chitanda.jpg" class="rounded" width="155"> </div>
                 <div class="ml-3 w-100">
-                    <h4 class="mb-0 mt-0">User</h4>
+                    <h4 class="mb-0 mt-0">User01</h4>
                 </div>
             </div>
         </div>
