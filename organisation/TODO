@@ -10,50 +10,34 @@ Chapter 1:
         TODO ----------------- !!!
        
 
-chapter 2:
+chapter 2: 12.02.2021
 
         DONE ----------------
         - Création de la BD 
-        - Fonctions media et post 
+        - Création des fonctions qui permettent d'enregistrer dans la BD les posts
+        
 
         TODO ----------------- !!!
 
-        - récupérer les données du type file (ensuite insérer dans les fonctions)
-        - tester si fonctions marchent
-        - checker si le résultat attendu dans la consigne est ok
-        - undefindes mediaFiles[] page post  à régler 
-        - filter dateCreation
+        - enregistrer les posts dans la BD (codé mais non fonctionnel)
+        - restriction de taille des images reçues dans le server (70mo en tout et max 3mo/img)
+        - déplacer le fichier temporaire dans un dossier (codé mais non fonctionnel )
+        - undefined mediaFiles[] page post  à régler 
+        - afficher les posts créés dans le home 
+        
 
-chapter 3:
+        COMMENTS ----------------- !!!
+
+        les fonctions sont faites et le code de déplacement du fichier temporaire aussi 
+        mais ca ne fonctionne pas
+
+chapter 3: 26.02.2021
 
         DONE ----------------
 
         TODO ----------------- !!!
 
-Chapter 4:
-
-        DONE ----------------
-
-        TODO ----------------- !!!
-
-
-
-Chapter 5:
-
-        DONE ----------------
-
-        TODO ----------------- !!!
-
-
-
-Chapter 6:
-
-        DONE ----------------
-
-        TODO ----------------- !!!
-
-
-chapter 7:
+Chapter 4: 05.03.2021
 
         DONE ----------------
 
@@ -61,7 +45,30 @@ chapter 7:
 
 
 
-Chapter 8:
+Chapter 5: 12.03.2021
+
+        DONE ----------------
+
+        TODO ----------------- !!!
+
+
+
+Chapter 6: 19.03.2021
+
+        DONE ----------------
+
+        TODO ----------------- !!!
+
+
+chapter 7: 26.03.2021
+
+        DONE ----------------
+
+        TODO ----------------- !!!
+
+
+
+Chapter 8: 31.02.2021
 
         DONE ----------------
 

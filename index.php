@@ -5,7 +5,9 @@ Nom, Prénom: Odaka Michi
 Date: 
 Version: 1.0
 -->
-
+<?php
+require_once('backend/functions.php');
+?>
 
 <!DOCTYPE html>
 
@@ -61,7 +63,10 @@ Version: 1.0
             </div>
         </div>
     </div>
-    <!-- form action= lien method = post/get-->
+
+    <section>
+    <!-- afficher les posts-->
+    </section>
 </body>
 <!-- FontAwesome kitCode  -->
 <script src="https://kit.fontawesome.com/b49b3eeefb.js" crossorigin="anonymous"></script>

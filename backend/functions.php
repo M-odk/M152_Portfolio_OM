@@ -17,8 +17,10 @@ function connectDB()
             $conn = new PDO('mysql:host=' . HOST . ';dbname=' . DBNAME, DBUSER, DBPWD, array(
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
                 PDO::ATTR_PERSISTENT => true
-
+            
             ));
+echo "Connexion ok";
+
         } // Exceptions
         catch (Exception $e) {
             echo 'Erreur : ' . $e->getMessage() . '<br />';
@@ -59,7 +61,7 @@ function InsertPost($comment, $date)
     static $req = null;
 
     // ajoute un post
-    $sql = "INSERT INTO t_post(commentaire, creationDate) VALUES(:comment, :date)";
+    $sql = "INSERT INTO t_post(commentaire, dateDeCreation) VALUES(:comment, :date)";
 
     if ($req == null) {
         $req = connectDB()->prepare($sql);
@@ -107,7 +109,7 @@ function InsertMedia($mediaType, $filename, $idPost)
     static $req = null;
 
     // ajoute un post
-    $sql = "INSERT INTO t_media(typeMedia, nomFichierMedia) VALUES(:mediaType, :nomFichier)";
+    $sql = "INSERT INTO t_media(typeMedia, nomFichierMedia, idPostFK) VALUES(:mediaType, :nomFichier, :idPost)";
 
     if ($req == null) {
         $req = connectDB()->prepare($sql);
@@ -117,6 +119,7 @@ function InsertMedia($mediaType, $filename, $idPost)
     try {
         $req->bindParam(':mediaType', $mediaType, PDO::PARAM_STR);
         $req->bindParam(':nomFichier', $filename, PDO::PARAM_STR);
+        $req->bindParam(':idPost', $idPost, PDO::PARAM_INT);
 
         $answer = $req->execute();
     } catch (PDOException $e) {
@@ -125,11 +128,39 @@ function InsertMedia($mediaType, $filename, $idPost)
     return $answer;
 }
 
+// Parcourir la table t_post pour afficher par la suite tous les posts
+function ReadPost()
+{
+    static $req = null;
 
+    $sql = "SELECT * FROM t_post";
 
+    if ($req == null) {
+        $req = connectDB()->prepare($sql);
+    }
+    $answer = false;
+    try {
 
+        if ($req->execute()) {
+            $answer = $req->fetchAll();
+        }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+    return $answer;
+}
 
+// Afficher les posts dans le home
+function DisplayPost()
+{
+    // Récupérer les données de la base
+    ReadPost();
 
+    // affichage des données
+   /* foreach ($variable as $key => $value) {
+        // créer chaque article 
+        // leur structure css et affichage dans ces boxs
+    } */
 
-
+}
 ?>

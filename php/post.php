@@ -6,44 +6,56 @@ Date:
 Version: 1.0
 -->
 <?php
-
+require_once('../backend/functions.php');
 
 // variables
-$nbFiles = 0;
-$typeMedia;
-$nomFichier;
-
+$nbFiles;
+$mediaType;
+$filename;
+$today = date("F j, Y, g:i, a");
 
 
 // Filters 
 
 $commentaire = filter_input(INPUT_POST, 'description',  FILTER_SANITIZE_STRING);
-$dateCreation;
 
-$submit = filter_input(INPUT_POST, 'publier',  FILTER_DEFAULT);
-
-/* if ($nbFiles != 0) {
-    
-    for ($i=0; $i < $nbFiles; $i++) { 
-        $typeMedia = $_FILES['mediaFiles[]']['type'][$i];
-        $nomFichier = $_FILES['mediaFiles[]']['name'][$i];
-     }
-}
-
-echo $nbFiles;
-*/
+$submit = filter_input(INPUT_POST, 'submit', FILTER_DEFAULT);
 
 
-// submit
+
+
+// Entre dans le submit correctement
 if(isset($submit)) {
+// echo "ok";
 
+// compter le nombre de fichier inséré
+   $nbFiles = count($_FILES);
+    if(isset($_FILES) && is_array($_FILES) && $nbFiles > 0)
+    {
+        $files = $_FILES['mediaFiles[]'];
+
+        // parcourir la liste selon le nombre d'item qu'il y a 
+        for ($i=0; $i < count($files['name']) ; $i++) { 
+            
+            // Récupérer le type du fichier
+            $mediaType = $files['type'][$i];
+
+           // nettoyer le nom du fichier et le récupérer
+            $filename = preg_replace('/[^a-z0-9\.\-]/ i','',$fichiers['name'][$i]);
+            echo $filename;
+            // Déplacer le fichier temporaire dans un dossier pour ne pas perdre les images
+            move_uploaded_file($fichier['tmp_name'][$i], './php/uploads/'.$filename);
+        }
+    }
+   
     // Checker si c'est bien une image (côté server)
 
     // ajouter les informations dans la BD
-    //createMediaAndPost();
+    //createMediaAndPost($commentaire , $date, $typeMedia, $nomFichier);
+
     // Redirection
-    header("Location: ../index.php");
-    exit;
+  // header("Location: ../index.php");
+  //  exit;
 }
 ?>
 <!DOCTYPE html>
@@ -84,16 +96,16 @@ if(isset($submit)) {
     </nav>
 
     <div class="d-flex justify-content-center mt-5 ">
-        <form class="w-50">
+        <form class="w-50" action="post.php" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                <textarea class="form-control" rows="3" placeholder="Laissez votre commentaire..."></textarea>
             </div>
             <!-- Image file --> 
             <div class="mb-3">
-                <input type="file" class="form-control" accept="image/*" name="mediaFiles[]"  multiple>
+                <input type="file" class="form-control" accept="image/*" name="mediaFiles[]"  multiple  />
 
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary" name="submit">Submit</button>
 
         </form>
     </div>
