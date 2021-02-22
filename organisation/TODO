@@ -31,6 +31,20 @@ chapter 2: 12.02.2021
         les fonctions sont faites et le code de déplacement du fichier temporaire aussi 
         mais ca ne fonctionne pas
 
+
+chapter 2: 22.02.2021
+
+        DONE ----------------
+
+        TODO ----------------- !!!
+        Faire en sorte que ca devienne fonctionnelle :)) (faire samedi après le rendu du TM le 27)
+        - taille - php.init max size
+        - nom unique --> move upload
+        - insert into BD --> LAST_ID()
+
+
+
+
 chapter 3: 26.02.2021
 
         DONE ----------------

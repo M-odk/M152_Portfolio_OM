@@ -19,7 +19,6 @@ function connectDB()
                 PDO::ATTR_PERSISTENT => true
             
             ));
-echo "Connexion ok";
 
         } // Exceptions
         catch (Exception $e) {
@@ -33,27 +32,32 @@ echo "Connexion ok";
     return $conn;
 }
 
+//---------------------------------------------------------------- CREATE -------------------------------------------------------------
+
 // Relation entre la table t_post et t_media
-function createMediaAndPost($comment, $date, $mediaType, $filename)
+function createMediaAndPost($comment, $mediaType, $filename)
 {
-    
+    // Date actuelle
+    $dateCreation = date("Y-m-d H:i:s");
+
     // Vérifier si le poste existe 
-   $post =  ReadPostByComAndDate($comment, $date);
+   $post =  ReadPostByComAndDate($comment, $dateCreation);
 
    // si le post n'existe pas on l'ajoute
     if ($post == NULL) {
         // Créer un nouveau post
-        InsertPost($comment, $date);
+        InsertPost($comment, $dateCreation);
 
         // Récupérer l'id du nouveau poste
-        $post =  ReadPostByComAndDate($comment, $date);
+        $post =  ReadPostByComAndDate($comment, $dateCreation);
 
     }
     // insère le tout dans les médias avec l'id du post
-    InsertMedia($mediaType,$filename, $post[0]['idPost']);
+    InsertMedia($mediaType,$filename, $post['idPost']);
 
 }
 
+//---------------------------------------------------------------- INSERT -------------------------------------------------------------
 
 // Ajouter le post de l'user dans la BD
 function InsertPost($comment, $date)
@@ -61,7 +65,7 @@ function InsertPost($comment, $date)
     static $req = null;
 
     // ajoute un post
-    $sql = "INSERT INTO t_post(commentaire, dateDeCreation) VALUES(:comment, :date)";
+    $sql = "INSERT INTO t_post(commentaire, dateDeCreation, dateDeModification) VALUES(:comment, :dateActuelle, :dateActuelle)";
 
     if ($req == null) {
         $req = connectDB()->prepare($sql);
@@ -69,7 +73,7 @@ function InsertPost($comment, $date)
 
     $answer = false;
     try {
-        $req->bindParam(':date', $date, PDO::PARAM_STR);
+        $req->bindParam(':dateActuelle', $date, PDO::PARAM_STR);
         $req->bindParam(':comment', $comment, PDO::PARAM_STR);
 
         $answer = $req->execute();
@@ -79,29 +83,6 @@ function InsertPost($comment, $date)
     return $answer;
 }
 
-// Récupérer l'id du post pour l'insérer dans le média en clé étrangère
-function ReadPostByComAndDate($commentaire, $dateCreation)
-{
-    static $req = null;
-
-    $sql = "SELECT idPost FROM t_post WHERE commentaire = :commentaire AND dateDeCreation = :dateCreation";
-
-    if ($req == null) {
-        $req = connectDB()->prepare($sql);
-    }
-    $answer = false;
-    try {
-        $req->bindParam(":commentaire", $commentaire, PDO::PARAM_STR);
-        $req->bindParam(":dateCreation", $dateCreation, PDO::PARAM_STR);
-
-        if ($req->execute()) {
-            $answer = $req->fetchAll();
-        }
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-    }
-    return $answer;
-}
 
 // Ajouter le média choisi dans la BD
 function InsertMedia($mediaType, $filename, $idPost)
@@ -127,6 +108,57 @@ function InsertMedia($mediaType, $filename, $idPost)
     }
     return $answer;
 }
+
+function InsertLastID()
+{
+    static $req = null;
+
+    // prend le dernier id FONCTIONNE PAS
+    $sql = "SELECT LAST_INSERT_ID(); ";
+
+    if ($req == null) {
+        $req = connectDB()->prepare($sql);
+    }
+
+    $answer = false;
+    try {
+
+        if ($req->execute()) {
+            $answer = $req->fetchAll();
+        }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+    return $answer;
+}
+
+
+//---------------------------------------------------------------- READ -------------------------------------------------------------
+
+// Récupérer l'id du post pour l'insérer dans le média en clé étrangère
+function ReadPostByComAndDate($commentaire, $dateCreation)
+{
+    static $req = null;
+
+    $sql = "SELECT idPost FROM t_post WHERE commentaire = :commentaire AND dateDeCreation = :dateCreation";
+
+    if ($req == null) {
+        $req = connectDB()->prepare($sql);
+    }
+    $answer = false;
+    try {
+        $req->bindParam(":commentaire", $commentaire, PDO::PARAM_STR);
+        $req->bindParam(":dateCreation", $dateCreation, PDO::PARAM_STR);
+
+        if ($req->execute()) {
+            $answer = $req->fetchAll();
+        }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+    return $answer;
+}
+
 
 // Parcourir la table t_post pour afficher par la suite tous les posts
 function ReadPost()
