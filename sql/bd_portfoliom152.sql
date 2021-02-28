@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Feb 28, 2021 at 04:10 PM
+-- Generation Time: Feb 28, 2021 at 06:37 PM
 -- Server version: 5.7.24
 -- PHP Version: 7.2.19
 
@@ -34,10 +34,17 @@ CREATE TABLE `t_media` (
   `idMedia` int(11) NOT NULL,
   `typeMedia` text NOT NULL,
   `nomMedia` text NOT NULL,
-  `creationDate` timestamp NOT NULL,
-  `modificationDate` date NOT NULL,
+  `creationDate` datetime NOT NULL,
   `postUtilise` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `t_media`
+--
+
+INSERT INTO `t_media` (`idMedia`, `typeMedia`, `nomMedia`, `creationDate`, `postUtilise`) VALUES
+(40, 'image/png', '603bdf91c9a88_beerEmpty.png', '2021-02-28 18:23:13', 10),
+(41, 'image/png', '603bdf91c9bdf_beerFull.png', '2021-02-28 18:23:13', 10);
 
 -- --------------------------------------------------------
 
@@ -47,10 +54,17 @@ CREATE TABLE `t_media` (
 
 CREATE TABLE `t_post` (
   `idPost` int(11) NOT NULL,
-  `commentaire` text NOT NULL,
-  `creationDate` date NOT NULL,
-  `modificationDate` date NOT NULL
+  `commentaire` text,
+  `creationDate` datetime NOT NULL,
+  `modificationDate` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `t_post`
+--
+
+INSERT INTO `t_post` (`idPost`, `commentaire`, `creationDate`, `modificationDate`) VALUES
+(10, 'asd', '2021-02-28 18:23:13', '2021-02-28 18:23:13');
 
 --
 -- Indexes for dumped tables
@@ -77,13 +91,13 @@ ALTER TABLE `t_post`
 -- AUTO_INCREMENT for table `t_media`
 --
 ALTER TABLE `t_media`
-  MODIFY `idMedia` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idMedia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `t_post`
 --
 ALTER TABLE `t_post`
-  MODIFY `idPost` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idPost` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
@@ -93,7 +107,7 @@ ALTER TABLE `t_post`
 -- Constraints for table `t_media`
 --
 ALTER TABLE `t_media`
-  ADD CONSTRAINT `postFK` FOREIGN KEY (`postUtilise`) REFERENCES `t_post` (`idPost`);
+  ADD CONSTRAINT `postFK` FOREIGN KEY (`postUtilise`) REFERENCES `t_post` (`idPost`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
