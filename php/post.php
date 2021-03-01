@@ -8,6 +8,7 @@ Version: 1.0
 <?php
 require_once('../backend/functions.php');
 
+
 // variables
 $nbFiles;
 $mediaType;
@@ -15,13 +16,13 @@ $filename;
 
 
 $error = null;
-$post_size = null;
+$post_size = 0;
 
 
 // CONST 
 $MAX_SIZE_FILE = 3000000;
 $MAX_SIZE_POST = 70000000;
-$TEMP = './temp_upload/';
+$IMG_REP = '../img/';
 
 // Filters 
 
@@ -30,48 +31,64 @@ $commentaire = filter_input(INPUT_POST, 'description',  FILTER_SANITIZE_STRING);
 $submit = filter_input(INPUT_POST, 'submit', FILTER_DEFAULT);
 
 
-if(isset($submit)) {
+if (isset($submit)) {
 
-        $files = $_FILES['mediaFiles[]']; // NULL
-        var_dump($files);
-        // regarder si la limite globale de taille est dépassée
-        if ($post_size < $MAX_SIZE_POST) {
-            
-            // regarde si la limite de taille de l'image est dépassée
-            if ($files['size']< $MAX_SIZE_FILE) {
+    $files = $_FILES['mediaFiles'];
 
-                 // parcourir la liste selon le nombre d'item qu'il y a 
-                for ($i=0; $i < count($files['name']) ; $i++) { 
-                    
-                    // Récupérer le type du fichier
-                    $mediaType = $files['type'][$i];
+    // vérifier taille des images et du post (le total)
+    for ($i = 0; $i < count($files['name']); $i++) {
 
-                    // nettoyer le nom du fichier et le récupérer
-                    $filename = preg_replace('/[^a-z0-9\.\-]/ i','',$files['name'][$i]);
-                    echo $filename;
-
-                    // ajouter la taille de l'image a la taille globale
-                    $post_size += $files['size'][$i];
-                    
-                    // Déplacer le fichier temporaire dans un dossier pour ne pas perdre les images
-                    // !!!! VERFIFIER SI NOM UNIQUE AVANT D'ENVOYER
-                    move_uploaded_file($fichier['tmp_name'][$i], $TEMP);
-                }
-                
-            }
-            else{
-                $error = "Vous avez dépassé la taille maximale de " . $MAX_SIZE_FILE . " bytes.";;
-            }
+        // vérifier le type du fichier
+        if (strpos($files['type'][$i], "image") === false) {
+            $error = "Vous n'avez pas rentré le bon format de fichier.";
+            break;
         }
-        else{
-            $error = "Vous avez dépassé la taille maximale de " . $MAX_SIZE_POST . " bytes.";;
+
+        // Verifier la taille du fichier
+        if ($files['size'][$i] > $MAX_SIZE_FILE) {
+            $error = "Vous avez dépassé la taille maximale de " . $MAX_SIZE_FILE . " bytes.";
+            break;
         }
-        // ajouter les informations dans la BD
-        createMediaAndPost($commentaire, $mediaType, $filename);
-        
+
+        // ajouter la taille de l'image a la taille globale
+        $post_size += $files['size'][$i];
     }
-   
-    // Checker si c'est bien une image (côté server) php.init
+    // afficher une erreur si la taille maximale d'un post est dépassé
+    if ($post_size > $MAX_SIZE_POST) {
+        $error = "Vous avez dépassé la taille maximale de " . $MAX_SIZE_POST . " bytes.";
+    }
+
+    // Après vérification des tailles images et post,
+    // s'il n'y a pas d'erreur on ajoute le média dans la bd
+    if ($error == null) {
+
+        $filename_array = array();
+        $mediaType_array = array();
+
+        for ($i = 0; $i < count($files['name']); $i++) {
+
+            // Récupérer le type du fichier
+            $mediaType = $files['type'][$i];
+
+            // Générer un ID aléatoire
+            $filename = uniqid();
+            // ajouter le nom de l'image nettoyé --> devient un nom unique 
+            $filename .= "_" . preg_replace('/[^a-z0-9\.\-]/ i', '', $files['name'][$i]);
+
+            // Déplacer le fichier temporaire dans un dossier pour ne pas perdre les images
+            if (move_uploaded_file($files['tmp_name'][$i], $IMG_REP . $filename)) {
+
+                // ajoute dans un tableau les noms uniques des médias
+                array_push($filename_array, $filename);
+                // type de média peut être différent alors ajouter un
+                array_push($mediaType_array, $mediaType);
+            }
+        }
+
+        // ajouter les informations dans la BD
+        createMediaAndPost($commentaire, $mediaType_array, $filename_array);
+    }
+}
 
 ?>
 <!DOCTYPE html>
@@ -114,11 +131,11 @@ if(isset($submit)) {
     <div class="d-flex justify-content-center mt-5 ">
         <form class="w-50" action="post.php" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
-                <textarea class="form-control" rows="3" placeholder="Laissez votre commentaire..."></textarea>
+                <textarea name="description" class="form-control" rows="3" placeholder="Laissez votre commentaire..."></textarea>
             </div>
-            <!-- Image file --> 
+            <!-- Image file -->
             <div class="mb-3">
-                <input type="file" class="form-control" accept="image/*" name="mediaFiles[]"  multiple  />
+                <input type="file" class="form-control" accept="image/*" name="mediaFiles[]" multiple />
 
             </div>
             <button type="submit" class="btn btn-primary" name="submit">Submit</button>
