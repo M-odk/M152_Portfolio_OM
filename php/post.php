@@ -10,11 +10,8 @@ require_once('../backend/functions.php');
 
 
 // variables
-$nbFiles;
 $mediaType;
 $filename;
-
-
 $error = null;
 $post_size = 0;
 
@@ -25,12 +22,11 @@ $MAX_SIZE_POST = 70000000;
 $IMG_REP = '../img/';
 
 // Filters 
-
 $commentaire = filter_input(INPUT_POST, 'description',  FILTER_SANITIZE_STRING);
 // faire un filter file ?
 $submit = filter_input(INPUT_POST, 'submit', FILTER_DEFAULT);
 
-
+// Bouton send
 if (isset($submit)) {
 
     $files = $_FILES['mediaFiles'];

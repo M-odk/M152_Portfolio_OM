@@ -147,7 +147,7 @@ function ReadPost()
 {
     static $req = null;
 
-    $sql = "SELECT * FROM t_post";
+    $sql = "SELECT * FROM t_post ORDER BY creationDate DESC ";
 
     if ($req == null) {
         $req = connectDB()->prepare($sql);
@@ -164,15 +164,53 @@ function ReadPost()
     return $answer;
 }
 
+// Récuperer les médias d'un post en fonction de idPost
+function ReadMediasByPostId($idPost)
+{
+    static $req = null;
+
+    $sql = "SELECT nomMedia, postUtilise FROM t_media WHERE postUtilise = :idPost ";
+
+    if ($req == null) {
+        $req = connectDB()->prepare($sql);
+    }
+    $answer = false;
+    try {
+
+        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT); 
+
+        if ($req->execute()) {
+            $answer = $req->fetchAll();
+        }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+    return $answer;
+}
+
 // Afficher les posts dans le home
 function DisplayPost()
-{
-    // Récupérer les données de la base
-    ReadPost();
+{   
+    // initialisation 
+    $eachPost =  array();
+    $medias = array();
 
-    // affichage des données
-    /* foreach ($variable as $key => $value) {
-        // créer chaque article 
-        // leur structure css et affichage dans ces boxs
-    } */
+    // récupérer les posts
+    $posts = ReadPost();
+   
+
+     // parcourir les posts --> chaque post est une ligne
+    foreach ($posts as $record) {
+
+        // avoir le commentaire de chaque post
+        $eachPost = $record['commentaire'];
+
+        // parcourir les médias et ajouter celles qui dépende le l'id actuelle
+        $medias = ReadMediasByPostId($record['idPost']);
+
+        // créer un tableau contenant le commentaire et les images correspondants
+        $display =  array($eachPost,$medias);
+    }
+    
+  return $display;
 }

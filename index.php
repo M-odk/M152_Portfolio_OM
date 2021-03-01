@@ -7,6 +7,9 @@ Version: 1.0
 -->
 <?php
 require_once('backend/functions.php');
+
+//  fonction pour lire les posts
+$posts = DisplayPost();
 ?>
 
 <!DOCTYPE html>
@@ -63,9 +66,25 @@ require_once('backend/functions.php');
             </div>
         </div>
     </div>
-
-    <section>
     <!-- afficher les posts-->
+    <section>
+    <table class=" mt-5  mx-auto">
+        
+    <?php 
+        /* 
+         foreach($posts as $record)
+         {
+             echo "<article>";
+             echo '<tr class="border rounded">';
+             echo '<td class="pr-5">' . $record['commentaire'] . "</td>";
+             echo '<td class="pr-5">' . $record['creationDate'] . "</td>";
+             echo '<td class="pr-5">'."<a href='php/update.php?id=${record['idPost']}'>Modifier </a></td>";
+             echo'<td class="pr-5">'. "<a href='php/delete.php?id=${record['idPost']}'>Supprimer</a></td>";
+             echo "</tr>";
+             echo "</article>";
+         } */
+ ?>
+    </table>
     </section>
 </body>
 <!-- FontAwesome kitCode  -->
