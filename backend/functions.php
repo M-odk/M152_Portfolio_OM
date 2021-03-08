@@ -19,6 +19,7 @@ function connectDB()
                 PDO::ATTR_PERSISTENT => true
             ));
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+           
         } // Exceptions
         catch (Exception $e) {
             echo 'Erreur : ' . $e->getMessage() . '<br />';
@@ -26,12 +27,15 @@ function connectDB()
             // Quitte le script et meurt
             die('Could not connect to MySQL');
         }
+       // https://www.php.net/manual/fr/pdo.transactions.php
+     
     }
 
     return $conn;
 }
 
 //---------------------------------------------------------------- INSERT -------------------------------------------------------------
+
 
 // Relation entre la table t_post et t_media
 function createMediaAndPost($comment, $mediaType, $filename)
@@ -52,6 +56,7 @@ function createMediaAndPost($comment, $mediaType, $filename)
     }
     // insère le tout dans les médias avec l'id du post
     InsertMultipleMedia($mediaType, $filename, $post["idPost"], $dateCreation);
+
 }
 
 
@@ -77,6 +82,7 @@ function InsertPost($comment)
         $req->bindParam(':comment', $comment, PDO::PARAM_STR);
 
         $answer = $req->execute();
+        
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
@@ -151,7 +157,7 @@ function ReadPost()
 {
     static $req = null;
 
-    $sql = "SELECT * FROM t_post ORDER BY creationDate DESC ";
+    $sql = "SELECT * FROM t_post ORDER BY creationDate ASC ";
 
     if ($req == null) {
         $req = connectDB()->prepare($sql);
@@ -173,7 +179,7 @@ function ReadMediasByPostId($idPost)
 {
     static $req = null;
 
-    $sql = "SELECT nomMedia, postUtilise FROM t_media WHERE postUtilise = :idPost ";
+    $sql = "SELECT nomMedia FROM t_media WHERE postUtilise = :idPost ";
 
     if ($req == null) {
         $req = connectDB()->prepare($sql);
@@ -184,7 +190,7 @@ function ReadMediasByPostId($idPost)
         $req->bindParam(":idPost", $idPost, PDO::PARAM_INT); 
 
         if ($req->execute()) {
-            $answer = $req->fetchAll();
+            $answer = $req->fetch();
         }
     } catch (PDOException $e) {
         echo $e->getMessage();
@@ -199,6 +205,7 @@ function DisplayPost()
     $comment =  array();
     $medias = array();
     $idPost = array();
+    $displayArray = array();
     
 
     // récupérer les posts
@@ -217,17 +224,10 @@ function DisplayPost()
         $medias = ReadMediasByPostId($idPost);
 
         // créer un tableau contenant le commentaire et les images correspondants
-        $display =  [ $idPost => ['commentaire' => $comment , 'médias' => $medias]];
-        
-       
-        
+        $displayArray[] =  [ $idPost => ['commentaire' => $comment , 'medias' => $medias['nomMedia']]];
+     
     }
-    var_dump($display);
-    return $display;
+    return $displayArray;
+   
 }
-
-// https://www.mysqltutorial.org/php-mysql-transaction/
-function transferDataToBD()
-{
-
-}
+?>

@@ -10,6 +10,12 @@ require_once('backend/functions.php');
 
 //  fonction pour lire les posts
 $posts = DisplayPost();
+
+for ($i=0; $i < count($posts) ; $i++) { 
+
+    var_dump($posts[$i]);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -72,15 +78,15 @@ $posts = DisplayPost();
         
     <?php 
 
-    for ($i=0; $i < count($posts) ; $i++) { 
-        echo "<article>";
-        echo '<tr class="border rounded">';
-        echo '<td class="pr-5">' . $posts[$i] . "</td>";
-        echo '<td class="pr-5">'."<a href='php/update.php?id=${posts[0]}'>Modifier </a></td>";
-        echo'<td class="pr-5">'. "<a href='php/delete.php?id=${posts[0]}'>Supprimer</a></td>";
-        echo "</tr>";
-        echo "</article>";
-    }
+for ($i=0; $i < count($posts) ; $i++) { 
+    echo "<article>";
+    echo '<tr class="border rounded">';
+   // echo '<td class="pr-5">' . "</td>";
+   // echo '<td class="pr-5">'."<a href='php/update.php?id=${posts[0]}'>Modifier </a></td>";
+   // echo'<td class="pr-5">'. "<a href='php/delete.php?id=${posts[0]}'>Supprimer</a></td>";
+    echo "</tr>";
+    echo "</article>";
+}
       
  ?>
     </table>
