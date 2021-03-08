@@ -49,14 +49,25 @@ if (isset($submit)) {
         // ajouter la taille de l'image a la taille globale
         $post_size += $files['size'][$i];
     }
+
     // afficher une erreur si la taille maximale d'un post est dépassé
     if ($post_size > $MAX_SIZE_POST) {
         $error = "Vous avez dépassé la taille maximale de " . $MAX_SIZE_POST . " bytes.";
     }
 
+    // si le post est vide , il faut mettre un message d'erreur 
+    if ($commentaire == "") {
+        echo "Veuillez mettre un commentaire pour pouvoir valider ce post.";
+    }
+
+    // Si l'utilisateur a choisi de ne pas mettre de média
+    if ($files['name'] == "") {
+        InsertPost($commentaire, $date);
+    }
+
     // Après vérification des tailles images et post,
     // s'il n'y a pas d'erreur on ajoute le média dans la bd
-    if ($error == null) {
+    if ($error == null && $commentaire != "") {
 
         $filename_array = array();
         $mediaType_array = array();

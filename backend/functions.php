@@ -45,7 +45,7 @@ function createMediaAndPost($comment, $mediaType, $filename)
     // si le post n'existe pas on l'ajoute
     if ($post == NULL) {
         // Créer un nouveau post
-        InsertPost($comment, $dateCreation);
+        InsertPost($comment);
 
         // Récupérer l'id du nouveau poste
         $post = ReadPostByComAndDate($comment, $dateCreation);
@@ -56,8 +56,12 @@ function createMediaAndPost($comment, $mediaType, $filename)
 
 
 // Ajouter le post de l'user dans la BD
-function InsertPost($comment, $date)
+function InsertPost($comment)
 {
+
+    // Date actuelle
+    $dateCreation = date("Y-m-d H:i:s");
+
     static $req = null;
 
     // ajoute un post
@@ -69,7 +73,7 @@ function InsertPost($comment, $date)
 
     $answer = false;
     try {
-        $req->bindParam(':dateActuelle', $date, PDO::PARAM_STR);
+        $req->bindParam(':dateActuelle', $dateCreation, PDO::PARAM_STR);
         $req->bindParam(':comment', $comment, PDO::PARAM_STR);
 
         $answer = $req->execute();
@@ -192,8 +196,10 @@ function ReadMediasByPostId($idPost)
 function DisplayPost()
 {   
     // initialisation 
-    $eachPost =  array();
+    $comment =  array();
     $medias = array();
+    $idPost = array();
+    
 
     // récupérer les posts
     $posts = ReadPost();
@@ -202,15 +208,26 @@ function DisplayPost()
      // parcourir les posts --> chaque post est une ligne
     foreach ($posts as $record) {
 
+        // Récupérer l'id de chaque post
+        $idPost = $record['idPost'];
         // avoir le commentaire de chaque post
-        $eachPost = $record['commentaire'];
+        $comment = $record['commentaire'];
 
         // parcourir les médias et ajouter celles qui dépende le l'id actuelle
-        $medias = ReadMediasByPostId($record['idPost']);
+        $medias = ReadMediasByPostId($idPost);
 
         // créer un tableau contenant le commentaire et les images correspondants
-        $display =  array($eachPost,$medias);
+        $display =  [ $idPost => ['commentaire' => $comment , 'médias' => $medias]];
+        
+       
+        
     }
-    
-  return $display;
+    var_dump($display);
+    return $display;
+}
+
+// https://www.mysqltutorial.org/php-mysql-transaction/
+function transferDataToBD()
+{
+
 }

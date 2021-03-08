@@ -71,18 +71,17 @@ $posts = DisplayPost();
     <table class=" mt-5  mx-auto">
         
     <?php 
-        /* 
-         foreach($posts as $record)
-         {
-             echo "<article>";
-             echo '<tr class="border rounded">';
-             echo '<td class="pr-5">' . $record['commentaire'] . "</td>";
-             echo '<td class="pr-5">' . $record['creationDate'] . "</td>";
-             echo '<td class="pr-5">'."<a href='php/update.php?id=${record['idPost']}'>Modifier </a></td>";
-             echo'<td class="pr-5">'. "<a href='php/delete.php?id=${record['idPost']}'>Supprimer</a></td>";
-             echo "</tr>";
-             echo "</article>";
-         } */
+
+    for ($i=0; $i < count($posts) ; $i++) { 
+        echo "<article>";
+        echo '<tr class="border rounded">';
+        echo '<td class="pr-5">' . $posts[$i] . "</td>";
+        echo '<td class="pr-5">'."<a href='php/update.php?id=${posts[0]}'>Modifier </a></td>";
+        echo'<td class="pr-5">'. "<a href='php/delete.php?id=${posts[0]}'>Supprimer</a></td>";
+        echo "</tr>";
+        echo "</article>";
+    }
+      
  ?>
     </table>
     </section>
