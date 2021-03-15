@@ -18,24 +18,27 @@ $post_size = 0;
 
 // CONST 
 $MAX_SIZE_FILE = 3000000;
-$MAX_SIZE_POST = 70000000;
-$IMG_REP = '../img/';
+$MAX_SIZE_POST = 90000000;
+$IMG_REP = '../medias/';
 
 // Filters 
 $commentaire = filter_input(INPUT_POST, 'description',  FILTER_SANITIZE_STRING);
-// faire un filter file ?
 $submit = filter_input(INPUT_POST, 'submit', FILTER_DEFAULT);
+
+
 
 // Bouton send
 if (isset($submit)) {
 
     $files = $_FILES['mediaFiles'];
 
-    // vérifier taille des images et du post (le total)
+    /* Vérifier s'il n'y a aucun problème avant d'envoyer dans la bd */
+
+
     for ($i = 0; $i < count($files['name']); $i++) {
 
         // vérifier le type du fichier
-        if (strpos($files['type'][$i], "image") === false) {
+        if (strpos($files['type'][$i], "image") === false || strpos($files['type'][$i], "video") === false) {
             $error = "Vous n'avez pas rentré le bon format de fichier.";
             break;
         }
@@ -65,7 +68,7 @@ if (isset($submit)) {
         InsertPost($commentaire, $date);
     }
 
-    // Après vérification des tailles images et post,
+    // Après vérification des tailles des medias et des posts,
     // s'il n'y a pas d'erreur on ajoute le média dans la bd
     if ($error == null && $commentaire != "") {
 
@@ -82,19 +85,28 @@ if (isset($submit)) {
             // ajouter le nom de l'image nettoyé --> devient un nom unique 
             $filename .= "_" . preg_replace('/[^a-z0-9\.\-]/ i', '', $files['name'][$i]);
 
-            // Déplacer le fichier temporaire dans un dossier pour ne pas perdre les images
-            if (move_uploaded_file($files['tmp_name'][$i], $IMG_REP . $filename)) {
+            // S'il y a une erreur, ne déplace pas le fichier temp                                            // A verifier (point 11 dans grille)
+           // try {
+                    // Déplacer le fichier temporaire dans un dossier pour ne pas perdre les images
+                if (move_uploaded_file($files['tmp_name'][$i], $IMG_REP . $filename)) {
 
-                // ajoute dans un tableau les noms uniques des médias
-                array_push($filename_array, $filename);
-                // type de média peut être différent alors ajouter un
-                array_push($mediaType_array, $mediaType);
-            }
+                    // ajoute dans un tableau les noms uniques des médias
+                    array_push($filename_array, $filename);
+                    // type de média peut être différent alors ajouter un
+                    array_push($mediaType_array, $mediaType);
+                }
+           // } catch (Exception $e) {
+           //     echo 'Exception reçue : ',  $e->getMessage(), "\n";
+           // }
+           
         }
 
         // ajouter les informations dans la BD
         createMediaAndPost($commentaire, $mediaType_array, $filename_array);
     }
+    // redirection
+    header('Location: ..\index.php');
+    exit;
 }
 
 ?>
@@ -142,7 +154,7 @@ if (isset($submit)) {
             </div>
             <!-- Image file -->
             <div class="mb-3">
-                <input type="file" class="form-control" accept="image/*" name="mediaFiles[]" multiple />
+                <input type="file" class="form-control" accept="image/*,video/*" name="mediaFiles[]" multiple />
 
             </div>
             <button type="submit" class="btn btn-primary" name="submit">Submit</button>

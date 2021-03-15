@@ -13,7 +13,7 @@ $posts = DisplayPost();
 
 for ($i=0; $i < count($posts) ; $i++) { 
 
-    var_dump($posts[$i]);
+   //var_dump($posts[$i]);
 }
 
 ?>
@@ -77,6 +77,8 @@ for ($i=0; $i < count($posts) ; $i++) {
     <table class=" mt-5  mx-auto">
         
     <?php 
+
+//https://www.w3schools.com/html/html5_video.asp 
 
 for ($i=0; $i < count($posts) ; $i++) { 
     echo "<article>";
