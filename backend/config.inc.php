@@ -18,4 +18,7 @@ define("DBNAME", "bd_portfoliom152");
 define("DBUSER", "userM152"); 
 define("DBPWD", "m152");  
 
+// define("DBUSER", "root"); 
+// define("DBPWD", "root");
+
 ?>

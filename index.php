@@ -11,11 +11,6 @@ require_once('backend/functions.php');
 //  fonction pour lire les posts
 $posts = DisplayPost();
 
-for ($i=0; $i < count($posts) ; $i++) { 
-
-   //var_dump($posts[$i]);
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -76,21 +71,38 @@ for ($i=0; $i < count($posts) ; $i++) {
     <section>
     <table class=" mt-5  mx-auto">
         
-    <?php 
+    <?php
+
+    foreach ($posts as $post) {
+
+    var_dump($post);
+    echo '<div class="card" style="width: 18rem;">';
+    //https://getbootstrap.com/docs/5.0/components/carousel/ 
+    echo '<img width="500" height="600" src="./medias/' . $post["medias"][0]["nomMedia"] . '" class="card-img-top">';
+
+    echo '<div class="card-body">';
+
+    echo ' <p class="card-text">' . $post["commentaire"] . '<br>' . $post["date"] . '</p>';
+
+    echo ' </div>';
+
+    echo '</div>';
+}
+
 
 //https://www.w3schools.com/html/html5_video.asp 
 
-for ($i=0; $i < count($posts) ; $i++) { 
-    echo "<article>";
-    echo '<tr class="border rounded">';
-   // echo '<td class="pr-5">' . "</td>";
-   // echo '<td class="pr-5">'."<a href='php/update.php?id=${posts[0]}'>Modifier </a></td>";
-   // echo'<td class="pr-5">'. "<a href='php/delete.php?id=${posts[0]}'>Supprimer</a></td>";
-    echo "</tr>";
-    echo "</article>";
-}
-      
- ?>
+// for ($i = 0; $i < count($posts); $i++) {
+//     echo "<article>";
+//     echo '<tr class="border rounded">';
+//     echo '<td class="pr-5">' . "</td>";
+//     echo '<td class="pr-5">' . "<a href='php/update.php?id=${posts[0]}'>Modifier </a></td>";
+//     echo '<td class="pr-5">' . "<a href='php/delete.php?id=${posts[0]}'>Supprimer</a></td>";
+//     echo "</tr>";
+//     echo "</article>";
+// }
+
+?>
     </table>
     </section>
 </body>

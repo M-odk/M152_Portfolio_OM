@@ -38,15 +38,18 @@ if (isset($submit)) {
     for ($i = 0; $i < count($files['name']); $i++) {
 
         // vérifier le type du fichier
-        if (strpos($files['type'][$i], "image") === false || strpos($files['type'][$i], "video") === false) {
+        if (strpos($files['type'][$i], "image") === false && strpos($files['type'][$i], "video") === false) {
             $error = "Vous n'avez pas rentré le bon format de fichier.";
             break;
+            echo $error;
         }
 
         // Verifier la taille du fichier
         if ($files['size'][$i] > $MAX_SIZE_FILE) {
             $error = "Vous avez dépassé la taille maximale de " . $MAX_SIZE_FILE . " bytes.";
             break;
+
+            echo $error;
         }
 
         // ajouter la taille de l'image a la taille globale
@@ -56,15 +59,17 @@ if (isset($submit)) {
     // afficher une erreur si la taille maximale d'un post est dépassé
     if ($post_size > $MAX_SIZE_POST) {
         $error = "Vous avez dépassé la taille maximale de " . $MAX_SIZE_POST . " bytes.";
+        echo $error;
     }
 
     // si le post est vide , il faut mettre un message d'erreur 
     if ($commentaire == "") {
-        echo "Veuillez mettre un commentaire pour pouvoir valider ce post.";
+        $error =  "Veuillez mettre un commentaire pour pouvoir valider ce post.";
+        echo $error;
     }
 
     // Si l'utilisateur a choisi de ne pas mettre de média
-    if ($files['name'] == "") {
+    if (empty($files['name'][$i])) {
         InsertPost($commentaire, $date);
     }
 
@@ -105,8 +110,8 @@ if (isset($submit)) {
         createMediaAndPost($commentaire, $mediaType_array, $filename_array);
     }
     // redirection
-    header('Location: ..\index.php');
-    exit;
+    // header('Location: ..\index.php');
+    // exit;
 }
 
 ?>

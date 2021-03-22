@@ -20,9 +20,7 @@ function connectDB()
                 PDO::ATTR_PERSISTENT => true
             ));
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $conn->beginTransaction();
-        
-        
+    
         } // Exceptions
         catch (Exception $e) {
             echo 'Erreur : ' . $e->getMessage() . '<br />';
@@ -43,32 +41,32 @@ function connectDB()
 // Relation entre la table t_post et t_media
 function createMediaAndPost($comment, $mediaType, $filename)
 {
-    try {
-        // Transaction 
-    $conn = connectDB();
-    
-    // Date actuelle
-    $dateCreation = date("Y-m-d H:i:s");
-
-    // Vérifier si le poste existe 
-    $post = ReadPostByComAndDate($comment, $dateCreation);
-
-    // si le post n'existe pas on l'ajoute
-    if ($post == NULL) {
-        // Créer un nouveau post
-        InsertPost($comment);
-
-        // Récupérer l'id du nouveau poste
-        $post = ReadPostByComAndDate($comment, $dateCreation);
-
-    }
-    // insère le tout dans les médias avec l'id du post
-    InsertMultipleMedia($mediaType, $filename, $post["idPost"], $dateCreation);
-
-    $conn->commit(); // Valide Transaction 
-    } catch (Exception $e) {
-        $conn->rollBack(); // Annule Transaction                                                 // si on annule il faut effacer aussi ce qu'on a move upload
-    }
+     // Transaction 
+     $conn = connectDB();
+     $conn->beginTransaction();
+ 
+     try {
+         // Date actuelle
+         $dateCreation = date("Y-m-d H:i:s");
+ 
+         // Vérifier si le poste existe 
+         $post = ReadPostByComAndDate($comment, $dateCreation);
+ 
+         // si le post n'existe pas on l'ajoute
+         if ($post == NULL) {
+             // Créer un nouveau post
+             InsertPost($comment);
+ 
+             // Récupérer l'id du nouveau poste
+             $post = ReadPostByComAndDate($comment, $dateCreation);
+         }
+         // insère le tout dans les médias avec l'id du post
+         InsertMultipleMedia($mediaType, $filename, $post["idPost"], $dateCreation);
+ 
+         $conn->commit(); // Valide Transaction 
+     } catch (Exception $e) {
+         $conn->rollBack(); // Annule Transaction                                                 // si on annule il faut effacer aussi ce qu'on a move upload
+     }
 
 }
 
@@ -214,39 +212,43 @@ function ReadMediasByPostId($idPost)
 // Afficher les posts dans le home
 function DisplayPost()
 {   
-    // initialisation 
-    $comment =  array();
-    $medias = array();
-    $idPost = array();
-    $displayArray = array();
-    $date = array();
- //   $eachMedia[] = array();
-
-    // récupérer les posts
-    $posts = ReadPost();
-   
-
+     // initialisation 
+     $comment =  array();
+     $medias = array();
+     $idPost = array();
+     $date = array();
+     $structureArray = array();
+     $postsArray = array();
+     //   $eachMedia[] = array();
+ 
+     // récupérer les posts
+     $posts = ReadPost();
+ 
+ 
      // parcourir les posts --> chaque post est une ligne
-    foreach ($posts as $record) {
-
-        // Récupérer l'id de chaque post
-        $idPost = $record['idPost'];
-        // Récupérer le commentaire de chaque post
-        $comment = $record['commentaire'];
-        // Récupérer la date de création de chaque post
-        $date = $record['creationDate'];
-
-        // parcourir les médias et ajouter celles qui dépende le l'id actuelle
-        $medias = ReadMediasByPostId($idPost);
-        var_dump($medias);
-      
-      //   $result[] = [ $idPost => ['commentaire' => $comment , 'date' => $date, 'medias' => $medias]];
-       
-    
-        
-    } 
-
-    return $displayArray;
+     foreach ($posts as $record) {
+ 
+         // Récupérer l'id de chaque post
+         $idPost = $record['idPost'];
+         // Récupérer le commentaire de chaque post
+         $comment = $record['commentaire'];
+         // Récupérer la date de création de chaque post
+         $date = $record['creationDate'];
+ 
+         // parcourir les médias et ajouter celles qui dépende le l'id actuelle
+         $medias = ReadMediasByPostId($idPost);
+ 
+         $structureArray = array(
+             "idPost" => $idPost,
+             "commentaire" => $comment,
+             "date" => $date,
+             "medias" => $medias
+         );
+ 
+         array_push($postsArray, $structureArray);
+     }
+ 
+     return $postsArray;
    
-}// $displayArray[] = ;
+}
 ?>
