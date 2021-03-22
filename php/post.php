@@ -37,8 +37,8 @@ if (isset($submit)) {
 
     for ($i = 0; $i < count($files['name']); $i++) {
 
-        // vérifier le type du fichier
-        if (strpos($files['type'][$i], "image") === false && strpos($files['type'][$i], "video") === false) {
+        // vérifier le type du fichier 
+        if (strpos($files['type'][$i], "image") === false && strpos($files['type'][$i], "video") === false && strpos($files['type'][$i], "audio") === false) {
             $error = "Vous n'avez pas rentré le bon format de fichier.";
             break;
             echo $error;
@@ -70,7 +70,7 @@ if (isset($submit)) {
 
     // Si l'utilisateur a choisi de ne pas mettre de média
     if (empty($files['name'][$i])) {
-        InsertPost($commentaire, $date);
+        InsertPost($commentaire);
     }
 
     // Après vérification des tailles des medias et des posts,
@@ -110,8 +110,8 @@ if (isset($submit)) {
         createMediaAndPost($commentaire, $mediaType_array, $filename_array);
     }
     // redirection
-    // header('Location: ..\index.php');
-    // exit;
+    header('Location: ..\index.php');
+    exit;
 }
 
 ?>

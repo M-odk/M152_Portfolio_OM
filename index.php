@@ -11,6 +11,7 @@ require_once('backend/functions.php');
 //  fonction pour lire les posts
 $posts = DisplayPost();
 
+
 ?>
 
 <!DOCTYPE html>
@@ -68,42 +69,74 @@ $posts = DisplayPost();
         </div>
     </div>
     <!-- afficher les posts-->
-    <section>
-    <table class=" mt-5  mx-auto">
+    
         
     <?php
 
+    /* Parcourir le tableau qui contient toutes les infos en fonction des posts  */
     foreach ($posts as $post) {
+        var_dump($post["medias"]);
+        echo '<div class="card" style="width: 18rem; " >';
 
-    var_dump($post);
-    echo '<div class="card" style="width: 18rem;">';
-    //https://getbootstrap.com/docs/5.0/components/carousel/ 
-    echo '<img width="500" height="600" src="./medias/' . $post["medias"][0]["nomMedia"] . '" class="card-img-top">';
+       /* post avec médias */
+        if ($post["medias"] != null) {
 
-    echo '<div class="card-body">';
+            // utilisation d'un affichage carrousel
+            $isActive = 'class="carousel-item"';
 
-    echo ' <p class="card-text">' . $post["commentaire"] . '<br>' . $post["date"] . '</p>';
+            // récpérer l'id du post pour le carrousel
+            echo '<div id="'.$post['idPost'].'" class="carousel slide" data-bs-ride="carousel">';
+        
 
-    echo ' </div>';
+            // parcourir les médias du post
+            for ($i=0; $i <  count($post["medias"]); $i++) { 
 
-    echo '</div>';
-}
+                echo ' <div class="carousel-inner">';
+                echo '<div'.(($i == 0)? $isActive = 'class="carousel-item active"' : 'class="carousel-item"').$isActive.'>';
 
 
-//https://www.w3schools.com/html/html5_video.asp 
+                if (strpos($post["medias"]["typeMedia"], "image") === true) {
+                    echo '<img  width="70px" height="100px" src="./medias/' . $post["medias"][$i]["nomMedia"] . '" class="d-block w-100 card-img-top" alt="image trop grande">';
+                }
 
-// for ($i = 0; $i < count($posts); $i++) {
-//     echo "<article>";
-//     echo '<tr class="border rounded">';
-//     echo '<td class="pr-5">' . "</td>";
-//     echo '<td class="pr-5">' . "<a href='php/update.php?id=${posts[0]}'>Modifier </a></td>";
-//     echo '<td class="pr-5">' . "<a href='php/delete.php?id=${posts[0]}'>Supprimer</a></td>";
-//     echo "</tr>";
-//     echo "</article>";
-// }
+                if (strpos($post["medias"]["typeMedia"], "video") === true) {
+            
+                    echo '<video  width="320px" height="240px" controls>';
+                    echo 'src="./medias/' . $post["medias"][$i]["nomMedia"] . '" class="d-block w-100 card-img-top" alt="vidéo trop grande">';
+                    echo '</video>';
+                }
+                
+                echo '</div>';
+                        
+            }
+            echo ' </div>';
+                echo ' <button class="carousel-control-prev" type="button" data-bs-target="#'.$post['idPost'].'"  data-bs-slide="prev">';
+                echo '  <span class="carousel-control-prev-icon" aria-hidden="true"></span>';
+                echo '  <span class="visually-hidden">Previous</span>';
+                echo ' </button>';
+
+                echo ' <button class="carousel-control-next" type="button" data-bs-target="#'.$post['idPost'].'"data-bs-slide="next">';
+                echo '  <span class="carousel-control-next-icon" aria-hidden="true"></span>';
+                echo '   <span class="visually-hidden">Next</span>';
+                echo ' </button>';
+            echo '</div>';
+        }
+
+            echo '<div class="card-body">';
+
+                echo ' <p class="card-text">' . $post["commentaire"] . '<br>' . $post["date"] . '</p>';
+                
+                echo "<a href='php\delete.php?id=${post['idPost']}'><img src='img\deleteIcon.png' width='30px' height='30px'></a></td>";
+                echo "<a href='php\update.php?id=${post['idPost']}'><img src='img\updateIcon.png' width='30px' height='30px'></a></td>";
+
+            echo ' </div>';
+        echo '</div>';
+
+    }
+            
+
 
 ?>
-    </table>
     </section>
 </body>
 <!-- FontAwesome kitCode  -->
