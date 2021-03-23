@@ -75,8 +75,8 @@ $posts = DisplayPost();
 
     /* Parcourir le tableau qui contient toutes les infos en fonction des posts  */
     foreach ($posts as $post) {
-        var_dump($post["medias"]);
-        echo '<div class="card" style="width: 18rem; " >';
+   // var_dump($post["medias"][0]["typeMedia"]);
+        echo '<div class="card" style="width: 18rem; height: 15rem; background" >';
 
        /* post avec médias */
         if ($post["medias"] != null) {
@@ -84,8 +84,8 @@ $posts = DisplayPost();
             // utilisation d'un affichage carrousel
             $isActive = 'class="carousel-item"';
 
-            // récpérer l'id du post pour le carrousel
-            echo '<div id="'.$post['idPost'].'" class="carousel slide" data-bs-ride="carousel">';
+            // récpérer l'id du post pour créer un id (carrousel)
+            echo '<div id="_'.$post['idPost'].'" class="carousel slide" data-bs-ride="carousel">';
         
 
             // parcourir les médias du post
@@ -95,11 +95,11 @@ $posts = DisplayPost();
                 echo '<div'.(($i == 0)? $isActive = 'class="carousel-item active"' : 'class="carousel-item"').$isActive.'>';
 
 
-                if (strpos($post["medias"]["typeMedia"], "image") === true) {
-                    echo '<img  width="70px" height="100px" src="./medias/' . $post["medias"][$i]["nomMedia"] . '" class="d-block w-100 card-img-top" alt="image trop grande">';
+                if (strpos($post["medias"][0]["typeMedia"], "image") === true) {
+                    echo '<img  width="200px" height="300px" src="./medias/' . $post["medias"][$i]["nomMedia"] . '" class="d-block w-100 card-img-top" alt="image trop grande">';
                 }
 
-                if (strpos($post["medias"]["typeMedia"], "video") === true) {
+                if (strpos($post["medias"][0]["typeMedia"], "video") === true) {
             
                     echo '<video  width="320px" height="240px" controls>';
                     echo 'src="./medias/' . $post["medias"][$i]["nomMedia"] . '" class="d-block w-100 card-img-top" alt="vidéo trop grande">';
@@ -110,14 +110,14 @@ $posts = DisplayPost();
                         
             }
             echo ' </div>';
-                echo ' <button class="carousel-control-prev" type="button" data-bs-target="#'.$post['idPost'].'"  data-bs-slide="prev">';
+                echo ' <button class="carousel-control-prev" type="button" data-bs-target="#_'.$post['idPost'].'"  data-bs-slide="prev">';
                 echo '  <span class="carousel-control-prev-icon" aria-hidden="true"></span>';
-                echo '  <span class="visually-hidden">Previous</span>';
+                echo '  <span class="visually-hidden"><img src="img\flecheGauche.png" width="30px" height="30px"></span>';
                 echo ' </button>';
 
-                echo ' <button class="carousel-control-next" type="button" data-bs-target="#'.$post['idPost'].'"data-bs-slide="next">';
+                echo ' <button class="carousel-control-next" type="button" data-bs-target="#_'.$post['idPost'].'"data-bs-slide="next">';
                 echo '  <span class="carousel-control-next-icon" aria-hidden="true"></span>';
-                echo '   <span class="visually-hidden">Next</span>';
+                echo '   <span class="visually-hidden" style="color: black;"><img src="img\flecheDroit.png" width="30px" height="30px"> </span>';
                 echo ' </button>';
             echo '</div>';
         }
@@ -133,9 +133,6 @@ $posts = DisplayPost();
         echo '</div>';
 
     }
-            
-
-
 ?>
     </section>
 </body>
