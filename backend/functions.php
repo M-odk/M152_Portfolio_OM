@@ -168,7 +168,7 @@ function ReadPost()
 {
     static $req = null;
 
-    $sql = "SELECT * FROM t_post ORDER BY creationDate ASC ";
+    $sql = "SELECT * FROM t_post ORDER BY creationDate DESC ";
 
     if ($req == null) {
         $req = connectDB()->prepare($sql);
