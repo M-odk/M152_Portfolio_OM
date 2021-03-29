@@ -159,7 +159,7 @@ if (isset($submit)) {
             </div>
             <!-- Image file -->
             <div class="mb-3">
-                <input type="file" class="form-control" accept="image/*,video/*" name="mediaFiles[]" multiple />
+                <input type="file" class="form-control" accept="image/*,video/*, audio/*" name="mediaFiles[]" multiple />
 
             </div>
             <button type="submit" class="btn btn-primary" name="submit">Submit</button>

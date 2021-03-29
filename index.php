@@ -10,8 +10,6 @@ require_once('backend/functions.php');
 
 //  fonction pour lire les posts
 $posts = DisplayPost();
-
-
 ?>
 
 <!DOCTYPE html>

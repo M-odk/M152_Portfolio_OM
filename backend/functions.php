@@ -206,6 +206,30 @@ function ReadMediasByPostId($idPost)
     return $answer;
 }
 
+function ReadPostById($idPost)
+{
+    
+    static $req = null;
+
+    $sql = "SELECT * FROM t_post WHERE idPost = :idPost ";
+
+    if ($req == null) {
+        $req = connectDB()->prepare($sql);
+    }
+    $answer = false;
+    try {
+
+        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT);
+
+        if ($req->execute()) {
+            $answer = $req->fetch();
+        }
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+    return $answer;
+}
+
 //---------------------------------------------------------------- UPDATE -------------------------------------------------------------
 
 /*Fonction qui met à jour un post en fonction de son ID (son commentaire et sa date de modification se change (transaction utilisé)*/
