@@ -20,7 +20,6 @@ function connectDB()
                 PDO::ATTR_PERSISTENT => true
             ));
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
         } // Exceptions
         catch (Exception $e) {
             echo 'Erreur : ' . $e->getMessage() . '<br />';
@@ -28,8 +27,6 @@ function connectDB()
             // Quitte le script et meurt
             die('Could not connect to MySQL');
         }
-       // https://www.php.net/manual/fr/pdo.transactions.php
-     
     }
 
     return $conn;
@@ -41,33 +38,34 @@ function connectDB()
 // Relation entre la table t_post et t_media
 function createMediaAndPost($comment, $mediaType, $filename)
 {
-     // Transaction 
-     $conn = connectDB();
-     $conn->beginTransaction();
- 
-     try {
-         // Date actuelle
-         $dateCreation = date("Y-m-d H:i:s");
- 
-         // Vérifier si le poste existe 
-         $post = ReadPostByComAndDate($comment, $dateCreation);
- 
-         // si le post n'existe pas on l'ajoute
-         if ($post == NULL) {
-             // Créer un nouveau post
-             InsertPost($comment);
- 
-             // Récupérer l'id du nouveau poste
-             $post = ReadPostByComAndDate($comment, $dateCreation);
-         }
-         // insère le tout dans les médias avec l'id du post
-         InsertMultipleMedia($mediaType, $filename, $post["idPost"], $dateCreation);
- 
-         $conn->commit(); // Valide Transaction 
-     } catch (Exception $e) {
-         $conn->rollBack(); // Annule Transaction                                                 // si on annule il faut effacer aussi ce qu'on a move upload
-     }
+    // Transaction 
+    $conn = connectDB();
+    $conn->beginTransaction();
 
+    try {
+        // Date actuelle
+        $dateCreation = date("Y-m-d H:i:s");
+
+        // Vérifier si le poste existe 
+        $post = ReadPostByComAndDate($comment, $dateCreation);
+
+        // si le post n'existe pas on l'ajoute
+        if ($post == NULL) {
+            // Créer un nouveau post
+            InsertPost($comment);
+
+            // Récupérer l'id du nouveau poste
+            $post = ReadPostByComAndDate($comment, $dateCreation);
+        }
+        // insère le tout dans les médias avec l'id du post
+        InsertMultipleMedia($mediaType, $filename, $post["idPost"], $dateCreation);
+
+        $conn->commit(); // Valide Transaction 
+        return true;
+    } catch (Exception $e) {
+        $conn->rollBack(); // Annule Transaction     
+        return false;
+    }
 }
 
 
@@ -93,7 +91,6 @@ function InsertPost($comment)
         $req->bindParam(':comment', $comment, PDO::PARAM_STR);
 
         $answer = $req->execute();
-        
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
@@ -198,7 +195,7 @@ function ReadMediasByPostId($idPost)
     $answer = false;
     try {
 
-        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT); 
+        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT);
 
         if ($req->execute()) {
             $answer = $req->fetchAll();
@@ -209,46 +206,172 @@ function ReadMediasByPostId($idPost)
     return $answer;
 }
 
-// Afficher les posts dans le home
-function DisplayPost()
-{   
-     // initialisation 
-     $comment =  array();
-     $medias = array();
-     $idPost = array();
-     $date = array();
-     $structureArray = array();
-     $postsArray = array();
-     //   $eachMedia[] = array();
- 
-     // récupérer les posts
-     $posts = ReadPost();
- 
- 
-     // parcourir les posts --> chaque post est une ligne
-     foreach ($posts as $record) {
- 
-         // Récupérer l'id de chaque post
-         $idPost = $record['idPost'];
-         // Récupérer le commentaire de chaque post
-         $comment = $record['commentaire'];
-         // Récupérer la date de création de chaque post
-         $date = $record['creationDate'];
- 
-         // parcourir les médias et ajouter celles qui dépende le l'id actuelle
-         $medias = ReadMediasByPostId($idPost);
- 
-         $structureArray = array(
-             "idPost" => $idPost,
-             "commentaire" => $comment,
-             "date" => $date,
-             "medias" => $medias
-         );
- 
-         array_push($postsArray, $structureArray);
-     }
- 
-     return $postsArray;
-   
+//---------------------------------------------------------------- UPDATE -------------------------------------------------------------
+
+/*Fonction qui met à jour un post en fonction de son ID (son commentaire et sa date de modification se change (transaction utilisé)*/
+function UpdatePostByID($idPost, $commentaire)
+{
+    // transaction
+    $conn = connectDB();
+    $conn->beginTransaction();
+
+    $dateModification = date("Y-m-d H:i:s");
+
+    static $req = null;
+
+    $sql = " UPDATE t_post SET commentaire = :commentaire, modificationDate = :dateDeModif WHERE idPost = :idPost ";
+
+    if ($req == null) {
+        $req = connectDB()->prepare($sql);
+    }
+    $answer = false;
+    try {
+        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT);
+        $req->bindParam(":commentaire", $commentaire, PDO::PARAM_STR);
+        $req->bindParam(":dateDeModif", $dateModification, PDO::PARAM_STR);
+
+        $answer = $req->execute();
+        $conn->commit();
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+        $conn->rollback();
+    }
+    return $answer;
 }
-?>
+
+/*Fonction qui met à jour les médias en fonction de l'ID du post concerné (transaction utilisé)
+*
+* S'il y a une modification des médias, on supprime les anciens médias et on les remplace par les nouveaux.
+*/
+function UpdateMediaByPostID($idPost, $type, $filename)
+{
+    // supprime tous les médias du post
+    DeleteMediasByPostID($idPost);
+
+    // transaction
+    $conn = connectDB();
+    $conn->beginTransaction();
+
+    $dateModification = date("Y-m-d H:i:s");
+
+    static $req = null;
+
+    // Pas UPDATE car trop compliqué si il y avait 2 médias et que la personne veut en ajouter 3
+    $sql = "INSERT INTO t_media(typeMedia, nomMedia, creationDate) VALUES(:typeMedia, :nom, :dateDeModif)  WHERE postUtilise = :idPost ";
+
+    if ($req == null) {
+        $req = connectDB()->prepare($sql);
+    }
+    $answer = false;
+    try {
+        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT);
+        $req->bindParam(":typeMedia", $type, PDO::PARAM_STR);
+        $req->bindParam(":nom", $filename, PDO::PARAM_STR);
+        $req->bindParam(":dateDeModif", $dateModification, PDO::PARAM_STR);
+
+        $answer = $req->execute();
+        $conn->commit();
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+        $conn->rollback();
+    }
+    return $answer;
+}
+
+//---------------------------------------------------------------- DELETE -------------------------------------------------------------
+/*Fonction qui supprime un post en fonction de son ID (utilisation de transaction)*/
+function DeletePostByID($idPost)
+{
+    $conn = connectDB();
+    $conn->beginTransaction();
+
+    static $req = null;
+
+    $sql = "DELETE FROM t_post WHERE idPost = :idPost ";
+
+    if ($req == null) {
+        $req = connectDB()->prepare($sql);
+    }
+    $answer = false;
+    try {
+        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT);
+
+        $answer = $req->execute();
+        $conn->commit();
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+        $conn->rollback();
+    }
+    return $answer;
+}
+
+/*Fonction qui supprime les médias en fonction de l'ID du post  (utilisation de transaction)*/
+function DeleteMediasByPostID($idPost)
+{
+    $conn = connectDB();
+    $conn->beginTransaction();
+
+    static $req = null;
+
+    $sql = "DELETE FROM t_media WHERE postUtilise = :idPost ";
+
+    if ($req == null) {
+        $req = connectDB()->prepare($sql);
+    }
+    $answer = false;
+    try {
+        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT);
+
+        $answer = $req->execute();
+        $conn->commit();
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+        $conn->rollback();
+    }
+    return $answer;
+}
+
+//---------------------------------------------------------------- AFFICHAGE -------------------------------------------------------------
+/* Créer un tableau ordonnée pour ensuite afficher les posts dans le home (index.php)
+<return> $postsArray : tableau contenant les informations à afficher </return>
+*/
+function DisplayPost()
+{
+    // initialisation 
+    $comment =  array();
+    $medias = array();
+    $idPost = array();
+    $date = array();
+    $structureArray = array();
+    $postsArray = array();
+    //   $eachMedia[] = array();
+
+    // récupérer les posts
+    $posts = ReadPost();
+
+
+    // parcourir les posts --> chaque post est une ligne
+    foreach ($posts as $record) {
+
+        // Récupérer l'id de chaque post
+        $idPost = $record['idPost'];
+        // Récupérer le commentaire de chaque post
+        $comment = $record['commentaire'];
+        // Récupérer la date de création de chaque post
+        $date = $record['creationDate'];
+
+        // parcourir les médias et ajouter celles qui dépende le l'id actuelle
+        $medias = ReadMediasByPostId($idPost);
+
+        $structureArray = array(
+            "idPost" => $idPost,
+            "commentaire" => $comment,
+            "date" => $date,
+            "medias" => $medias
+        );
+
+        array_push($postsArray, $structureArray);
+    }
+
+    return $postsArray;
+}

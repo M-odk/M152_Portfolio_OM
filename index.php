@@ -71,73 +71,75 @@ $posts = DisplayPost();
     </div>
     <!-- afficher les posts-->
 
-<section class=" d-flex flex-column align-items-center justify-content-center">
-    <?php
+    <section class=" d-flex flex-column align-items-center justify-content-center">
+        <?php
 
-    /* Parcourir le tableau qui contient toutes les infos en fonction des posts  */
-    foreach ($posts as $post) {
-        // var_dump($post["medias"][0]["typeMedia"]);
-        echo '<div class="card mt-5" style="width: 30rem;" >';
+        /* Parcourir le tableau qui contient toutes les infos en fonction des posts  */
+        foreach ($posts as $post) {
+            // var_dump($post["medias"][0]["typeMedia"]);
+            echo '<div class="card mt-5" style="width: 30rem;" >';
 
-        /* post avec médias */
-        if ($post["medias"] != null) {
+            /* post avec médias */
+            if ($post["medias"] != null) {
 
-            // utilisation d'un affichage carrousel
-            $isActive = 'class="carousel-item"';
+                // utilisation d'un affichage carrousel
+                $isActive = 'class="carousel-item"';
 
-            // récpérer l'id du post pour créer un id (carrousel)
-            echo '<div id="_' . $post['idPost'] . '" class="carousel slide" data-bs-ride="carousel" data-interval="false">';
-
-
-            echo ' <div class="carousel-inner">';
-            // parcourir les médias du post
-            for ($i = 0; $i <  count($post["medias"]); $i++) {
-
-                echo '<div ' . (($i == 0) ? $isActive = 'class="carousel-item active"' : 'class="carousel-item"') . $isActive . '>';
+                // récpérer l'id du post pour créer un id (carrousel)
+                echo '<div id="_' . $post['idPost'] . '" class="carousel slide" data-bs-ride="carousel" data-interval="false">';
 
 
-                if (is_numeric(strpos($post["medias"][0]["typeMedia"], "image"))) {
-                    echo '<img  src="./medias/' . $post["medias"][$i]["nomMedia"] . '" class="d-block w-100 card-img-top" alt="image trop grande">';
+                echo ' <div class="carousel-inner">';
+                // parcourir les médias du post
+                for ($i = 0; $i <  count($post["medias"]); $i++) {
+
+                    echo '<div ' . (($i == 0) ? $isActive = 'class="carousel-item active"' : 'class="carousel-item"') . $isActive . '>';
+
+
+                    if (is_numeric(strpos($post["medias"][0]["typeMedia"], "image"))) {
+                        echo '<img  src="./medias/' . $post["medias"][$i]["nomMedia"] . '" class="d-block w-100 card-img-top" alt="Image : ' . $post["medias"][$i]["nomMedia"] . '">';
+                    }
+
+                    if (is_numeric(strpos($post["medias"][0]["typeMedia"], "video"))) {
+
+                        echo '<video width="100%" controls autoplay loop>';
+                        echo '<source src="./medias/' . $post["medias"][$i]["nomMedia"] . '" class="d-block w-100 card-img-top" alt="Video : ' . $post["medias"][$i]["nomMedia"] . '">';
+                        echo '</video>';
+                    }
+
+                    if (is_numeric(strpos($post["medias"][0]["typeMedia"], "audio"))) {
+                        echo '<audio width="100%" controls>';
+                        echo '<source src="./medias/' . $post["medias"][$i]["nomMedia"] . '" class="d-block w-100 card-img-top" alt="Audio : ' . $post["medias"][$i]["nomMedia"] . '">';
+                        echo '</audio>';
+                    }
+
+                    echo '</div>';
                 }
+                echo ' </div>';
+                echo ' <button class="carousel-control-prev" type="button" data-bs-target="#_' . $post['idPost'] . '"  data-bs-slide="prev">';
+                echo '  <span class="carousel-control-prev-icon" aria-hidden="true"></span>';
+                echo '  <span class="visually-hidden" style="color: black;"></span>';
+                echo ' </button>';
 
-                if (is_numeric(strpos($post["medias"][0]["typeMedia"], "video"))) {
-
-                    echo '<video width="100%" controls>';
-                    echo '<source src="./medias/' . $post["medias"][$i]["nomMedia"] . '" class="d-block w-100 card-img-top" alt="vidéo trop grande">';
-                    echo '</video>';
-                }
-
-                if (is_numeric(strpos($post["medias"][0]["typeMedia"], "audio"))) {
-                    # code...
-                }
-
+                echo ' <button class="carousel-control-next" type="button" data-bs-target="#_' . $post['idPost'] . '"data-bs-slide="next">';
+                echo '  <span class="carousel-control-next-icon" aria-hidden="true"></span>';
+                echo '  <span class="visually-hidden"></span>';
+                echo ' </button>';
                 echo '</div>';
             }
-            echo ' </div>';
-            echo ' <button class="carousel-control-prev" type="button" data-bs-target="#_' . $post['idPost'] . '"  data-bs-slide="prev">';
-            echo '  <span class="carousel-control-prev-icon" aria-hidden="true"></span>';
-            echo '  <span class="visually-hidden" style="color: black;"></span>';
-            echo ' </button>';
 
-            echo ' <button class="carousel-control-next" type="button" data-bs-target="#_' . $post['idPost'] . '"data-bs-slide="next">';
-            echo '  <span class="carousel-control-next-icon" aria-hidden="true"></span>';
-            echo '  <span class="visually-hidden"></span>';
-            echo ' </button>';
+            echo '<div class="card-body" style="height: 150px">';
+
+            echo ' <p class="card-text">' . $post["commentaire"] . '<br>' . $post["date"] . '</p>';
+
+            echo "<a href='php\delete.php?id=${post['idPost']}'><img src='img\deleteIcon.png' width='30px' height='30px'></a></td>";
+            echo "<a href='php\update.php?id=${post['idPost']}'><img src='img\updateIcon.png' width='30px' height='30px'></a></td>";
+
+            echo ' </div>';
+
             echo '</div>';
         }
-
-        echo '<div class="card-body" style="height: 150px">';
-
-        echo ' <p class="card-text">' . $post["commentaire"] . '<br>' . $post["date"] . '</p>';
-
-        echo "<a href='php\delete.php?id=${post['idPost']}'><img src='img\deleteIcon.png' width='30px' height='30px'></a></td>";
-        echo "<a href='php\update.php?id=${post['idPost']}'><img src='img\updateIcon.png' width='30px' height='30px'></a></td>";
-
-        echo ' </div>';
-        
-        echo '</div>';
-    }
-    ?>
+        ?>
 
     </section>
 </body>

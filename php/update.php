@@ -2,9 +2,11 @@
 require_once('../backend/functions.php');
 
 // submit
-// appeler la fonction modifier 
+// appeler fonctions update post et update médias 
+// 
+
 // exit 
 
-echo "modify here";
-?>
+echo "modify here"; // faire un formulaire 
 
+// afficher la date de modif sur l'index

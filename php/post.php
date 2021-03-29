@@ -89,25 +89,25 @@ if (isset($submit)) {
             $filename = uniqid();
             // ajouter le nom de l'image nettoyé --> devient un nom unique 
             $filename .= "_" . preg_replace('/[^a-z0-9\.\-]/ i', '', $files['name'][$i]);
+            // Déplacer le fichier temporaire dans un dossier pour ne pas perdre les images
+            if (move_uploaded_file($files['tmp_name'][$i], $IMG_REP . $filename)) {
 
-            // S'il y a une erreur, ne déplace pas le fichier temp                                            // A verifier (point 11 dans grille)
-           // try {
-                    // Déplacer le fichier temporaire dans un dossier pour ne pas perdre les images
-                if (move_uploaded_file($files['tmp_name'][$i], $IMG_REP . $filename)) {
-
-                    // ajoute dans un tableau les noms uniques des médias
-                    array_push($filename_array, $filename);
-                    // type de média peut être différent alors ajouter un
-                    array_push($mediaType_array, $mediaType);
-                }
-           // } catch (Exception $e) {
-           //     echo 'Exception reçue : ',  $e->getMessage(), "\n";
-           // }
-           
+                // ajoute dans un tableau les noms uniques des médias
+                array_push($filename_array, $filename);
+                // type de média peut être différent alors ajouter un
+                array_push($mediaType_array, $mediaType);
+            }
         }
 
         // ajouter les informations dans la BD
-        createMediaAndPost($commentaire, $mediaType_array, $filename_array);
+        // s'il y a un problème lors de l'insertion à la BD 
+        // effacer les fichiers upload locaux
+        if (createMediaAndPost($commentaire, $mediaType_array, $filename_array) == false) {
+            // supprimer les files dans le array
+            foreach ($filename_array as $filename) {
+                unlink($filename);
+            }
+        }
     }
     // redirection
     header('Location: ..\index.php');
