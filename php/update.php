@@ -6,27 +6,36 @@ $idPost = filter_input(INPUT_GET, "id", FILTER_DEFAULT);
 $submit = filter_input(INPUT_POST, 'submit', FILTER_DEFAULT);
 $back = filter_input(INPUT_POST, 'back', FILTER_DEFAULT);
 $commModifie = filter_input(INPUT_POST, 'description',  FILTER_SANITIZE_STRING);
+$check = filter_input(INPUT_POST, "ckbMedia", FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+
 
 // récupérer le commentaire du post
 $commentaire = ReadPostById($idPost);
 $medias = ReadMediasByPostId($idPost);
 
-var_dump($medias);
-
 if (isset($submit)) {
     // modifier le commentaire
- //UpdatePostByID($idPost,$commModifie);
-
-
+    if (isset($commModifie)) {
+        UpdatePostByID($idPost,$commModifie);
+    }
+    // supprimer les médias qui ont été checké
+    if ($check) {
+        for ($i=0; $i < count($check) ; $i++) { 
+        DeleteMediasByID($check[$i]);
+        }
+    }
+    // Retourner sur index.php
+    header('Location: ../index.php');
+    exit;
    
 }
 
-// if (isset($back)) {
-//    // Retourner sur index.php
-//     header('Location: ../index.php');
-//     exit;
+if (isset($back)) {
+   // Retourner sur index.php
+    header('Location: ../index.php');
+    exit;
 
-// }
+}
 // afficher la date de modif sur l'index
 ?>
 
@@ -55,31 +64,50 @@ if (isset($submit)) {
             <div class="mb-3">
                 <input type="file" class="form-control" accept="image/*,video/*, audio/* " name="mediaFiles[]" multiple />
             </div>
-            <div>
-                <button type="submit" class="btn btn-secondary" name="back">Back</button>
-                <button type="submit" class="btn btn-primary" name="submit">Submit</button>
-            </div>
             
+            <div class=" d-flex flex-column align-items-center justify-content-center">
             <?php // Afficher les médias
                 foreach ($medias as $media) {
-                  $mediaName = $media[2];
-                
+                 
+                    // variables
+                 $mediaName = $media[2];
+                 $mediaIndex = $media[0];
+                 $mediaType = $media[1];
+
+               
+                 // afichage 
                  echo ' <div class="card mt-5" style="width: 30rem;">';
-                 echo ' <img src="../medias/'.$mediaName.'" class="card-img-top" alt="Media">';
+
+                 if (is_numeric(strpos($mediaType, "image"))) {
+                    echo '<img  src="./medias/' .$mediaName. '" class="d-block w-100 card-img-top" alt="Image : ' .$mediaName. '">';
+                }
+
+                if (is_numeric(strpos($mediaType, "video"))) {
+                    
+                    echo '<video width="100%" controls>';
+                    echo '<source src="./medias/' . $mediaName. '" class="d-block w-100 card-img-top" alt="Video : ' .$mediaName. '">';
+                    echo '</video>';
+                }
+
+                if (is_numeric(strpos($mediaType, "audio"))) {
+                    echo '<audio width="100%" controls>';
+                    echo '<source src="./medias/' . $mediaName . '" class="d-block w-100 card-img-top" alt="Audio : ' .$mediaName. '">';
+                    echo '</audio>';
+                }
+
                  echo  '<div class="card-body">';
-                echo '<h5 class="card-title">'.$mediaName.'</h5>';
-                echo '</div></div>';
-                  //var_dump($mediaName);
+                 echo '<h5 class="card-title">'.$mediaName.'</h5>';
+                 //checkbox pour supprimer le média
+                 echo '<input type="checkbox" id="media'.$mediaIndex.'" name="ckbMedia[]" value="'.$mediaIndex.'" class="mr-3">';
+                 echo '<label for="media'.$mediaIndex.'"> Delete</label>';
+                 echo '</div></div>';
                 }
             ?>
 
-           
-           
-                
-
-                <!-- checkbox pour supprimer le média-->
-
             </div>
+            <div class="mt-5">
+                <button type="submit" class="btn btn-secondary" name="back">Back</button>
+                <button type="submit" class="btn btn-primary" name="submit">Submit</button>
             </div>
         </form>
     </div>

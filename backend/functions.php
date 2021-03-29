@@ -265,13 +265,10 @@ function UpdatePostByID($idPost, $commentaire)
 
 /*Fonction qui met à jour les médias en fonction de l'ID du post concerné (transaction utilisé)
 *
-* S'il y a une modification des médias, on supprime les anciens médias et on les remplace par les nouveaux.
+* Permet d'ajouter des médias au post
 */
 function UpdateMediaByPostID($idPost, $type, $filename)
 {
-    // supprime tous les médias du post
-    DeleteMediasByPostID($idPost);
-
     // transaction
     $conn = connectDB();
     $conn->beginTransaction();
@@ -330,21 +327,21 @@ function DeletePostByID($idPost)
 }
 
 /*Fonction qui supprime les médias en fonction de l'ID du post  (utilisation de transaction)*/
-function DeleteMediasByPostID($idPost)
+function DeleteMediasByID($idMedia)
 {
     $conn = connectDB();
     $conn->beginTransaction();
 
     static $req = null;
 
-    $sql = "DELETE FROM t_media WHERE postUtilise = :idPost ";
+    $sql = "DELETE FROM t_media WHERE idMedia = :idMedia ";
 
     if ($req == null) {
         $req = connectDB()->prepare($sql);
     }
     $answer = false;
     try {
-        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT);
+        $req->bindParam(":idMedia", $idMedia, PDO::PARAM_INT);
 
         $answer = $req->execute();
         $conn->commit();
@@ -383,6 +380,8 @@ function DisplayPost()
         $comment = $record['commentaire'];
         // Récupérer la date de création de chaque post
         $date = $record['creationDate'];
+        // Récupérer la date de création de chaque post
+        $dateModif = $record['modificationDate'];
 
         // parcourir les médias et ajouter celles qui dépende le l'id actuelle
         $medias = ReadMediasByPostId($idPost);
@@ -391,7 +390,8 @@ function DisplayPost()
             "idPost" => $idPost,
             "commentaire" => $comment,
             "date" => $date,
-            "medias" => $medias
+            "medias" => $medias,
+            "dateModif" => $dateModif
         );
 
         array_push($postsArray, $structureArray);

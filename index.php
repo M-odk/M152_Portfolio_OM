@@ -127,7 +127,9 @@ $posts = DisplayPost();
             }
 
             echo '<div class="card-body" style="height: 150px">';
-
+            
+            // si la date a été modifiée, on prend Cette date
+            $date = ($post["date"] != $post["dateModif"]) ? $post["dateModif"] :  $post["date"] ;
             echo ' <p class="card-text">' . $post["commentaire"] . '<br>' . $post["date"] . '</p>';
 
             echo "<a href='php\delete.php?id=${post['idPost']}'><img src='img\deleteIcon.png' width='30px' height='30px'></a></td>";
