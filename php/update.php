@@ -13,6 +13,7 @@ $check = filter_input(INPUT_POST, "ckbMedia", FILTER_SANITIZE_STRING, FILTER_REQ
 $commentaire = ReadPostById($idPost);
 $medias = ReadMediasByPostId($idPost);
 
+
 if (isset($submit)) {
     // modifier le commentaire
     if (isset($commModifie)) {
@@ -21,8 +22,14 @@ if (isset($submit)) {
     // supprimer les médias qui ont été checké
     if ($check) {
         for ($i=0; $i < count($check) ; $i++) { 
-        DeleteMediasByID($check[$i]);
-        }
+
+            //verifie si la fonction de suppression s'est bien exécuté
+            if (DeleteMediasByID($check[$i]) == true) {
+                // suppression de l'upload en local
+                    unlink("../medias/" . $media[2]);
+            }   
+         }
+
     }
     // Retourner sur index.php
     header('Location: ../index.php');
