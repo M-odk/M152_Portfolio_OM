@@ -144,7 +144,7 @@ if (isset($submit)) {
                     </li>
                     <li class="nav-item">
 
-                        <a class="collapse-item nav-link active" href="./php/post.php"><i class="fas fa-clone"></i> Post</a>
+                        <a class="collapse-item nav-link active" href="post.php"><i class="fas fa-clone"></i> Post</a>
                     </li>
 
                 </ul>

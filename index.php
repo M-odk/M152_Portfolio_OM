@@ -39,7 +39,7 @@ $posts = DisplayPost();
                 <ul class="navbar-nav">
                     <li class="nav-item">
 
-                        <a class="collapse-item nav-link active" href="../index.php"><i class="fas fa-home"></i> Home</a>
+                        <a class="collapse-item nav-link active" href="index.php"><i class="fas fa-home"></i> Home</a>
                     </li>
                     <li class="nav-item">
 
@@ -75,7 +75,7 @@ $posts = DisplayPost();
         /* Parcourir le tableau qui contient toutes les infos en fonction des posts  */
         foreach ($posts as $post) {
             // var_dump($post["medias"][0]["typeMedia"]);
-            echo '<div class="card mt-5" style="width: 30rem;" >';
+            echo '<div class="card mt-5" style="width: 40rem;" >';
 
             /* post avec médias */
             if ($post["medias"] != null) {
