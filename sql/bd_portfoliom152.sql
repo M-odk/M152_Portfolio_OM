@@ -42,9 +42,7 @@ CREATE TABLE `t_media` (
 -- Dumping data for table `t_media`
 --
 
-INSERT INTO `t_media` (`idMedia`, `typeMedia`, `nomMedia`, `creationDate`, `postUtilise`) VALUES
-(40, 'image/png', '603bdf91c9a88_beerEmpty.png', '2021-02-28 18:23:13', 10),
-(41, 'image/png', '603bdf91c9bdf_beerFull.png', '2021-02-28 18:23:13', 10);
+
 
 -- --------------------------------------------------------
 
@@ -62,9 +60,6 @@ CREATE TABLE `t_post` (
 --
 -- Dumping data for table `t_post`
 --
-
-INSERT INTO `t_post` (`idPost`, `commentaire`, `creationDate`, `modificationDate`) VALUES
-(10, 'asd', '2021-02-28 18:23:13', '2021-02-28 18:23:13');
 
 --
 -- Indexes for dumped tables

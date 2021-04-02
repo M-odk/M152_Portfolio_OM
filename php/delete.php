@@ -1,4 +1,13 @@
 <?php
+/*
+ * Page : Page de suppression d'un post 
+ * 
+ * ODAKA M. || CFPT-I || IFDA-P3A
+ * 
+ * Date: 02.04.2021  
+ * 
+ */
+
 require_once('../backend/functions.php');
 
 // filter pour récupérer l'id en GET

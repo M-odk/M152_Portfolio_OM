@@ -1,11 +1,13 @@
-<!--
-Projet: Page formulaire de création  post 
-Description: où l'on créé des posts 
-Nom, Prénom: Odaka Michi
-Date: 
-Version: 1.0
--->
 <?php
+/*
+ * Page : Page d'ajout d'un post 
+ * 
+ * ODAKA M. || CFPT-I || IFDA-P3A
+ * 
+ * Date: 02.04.2021  
+ * 
+ */
+
 require_once('../backend/functions.php');
 
 
@@ -40,16 +42,15 @@ if (isset($submit)) {
         // vérifier le type du fichier 
         if (strpos($files['type'][$i], "image") === false && strpos($files['type'][$i], "video") === false && strpos($files['type'][$i], "audio") === false) {
             $error = "Vous n'avez pas rentré le bon format de fichier.";
-            break;
             echo $error;
+            break;
         }
 
         // Verifier la taille du fichier
         if ($files['size'][$i] > $MAX_SIZE_FILE) {
             $error = "Vous avez dépassé la taille maximale de " . $MAX_SIZE_FILE . " bytes.";
-            break;
-
             echo $error;
+            break;
         }
 
         // ajouter la taille de l'image a la taille globale
