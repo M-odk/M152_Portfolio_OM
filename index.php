@@ -1,10 +1,11 @@
-<!--
-Projet: Portfolio 
-Description:
-Nom, Prénom: Odaka Michi
-Date: 
-Version: 1.0
--->
+/*
+ * Page : Page d'accueil où on affiche les posts 
+ * 
+ * ODAKA M. || CFPT-I || IFDA-P3A
+ * 
+ * Date: 02.04.2021  
+ * 
+ */
 <?php
 require_once('backend/functions.php');
 
@@ -39,7 +40,7 @@ $posts = DisplayPost();
                 <ul class="navbar-nav">
                     <li class="nav-item">
 
-                        <a class="collapse-item nav-link active" href="../index.php"><i class="fas fa-home"></i> Home</a>
+                        <a class="collapse-item nav-link active" href="index.php"><i class="fas fa-home"></i> Home</a>
                     </li>
                     <li class="nav-item">
 
@@ -75,7 +76,7 @@ $posts = DisplayPost();
         /* Parcourir le tableau qui contient toutes les infos en fonction des posts  */
         foreach ($posts as $post) {
             // var_dump($post["medias"][0]["typeMedia"]);
-            echo '<div class="card mt-5" style="width: 30rem;" >';
+            echo '<div class="card mt-5" style="width: 40rem;" >';
 
             /* post avec médias */
             if ($post["medias"] != null) {
@@ -128,7 +129,8 @@ $posts = DisplayPost();
 
             echo '<div class="card-body" style="height: 150px">';
 
-            echo ' <p class="card-text">' . $post["commentaire"] . '<br>' . $post["date"] . '</p>';
+            // si la date a été modifiée, on prend Cette date
+            echo ' <p class="card-text">' . $post["commentaire"] . '<br>' . $post["dateModif"] . '</p>';
 
             echo "<a href='php\delete.php?id=${post['idPost']}'><img src='img\deleteIcon.png' width='30px' height='30px'></a></td>";
             echo "<a href='php\update.php?id=${post['idPost']}'><img src='img\updateIcon.png' width='30px' height='30px'></a></td>";

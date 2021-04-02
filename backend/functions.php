@@ -1,13 +1,16 @@
 <?php
-// Session start
+/*
+ * Page : Séparation des requêtes avec des fonctions 
+ * 
+ * ODAKA M. || CFPT-I || IFDA-P3A
+ * 
+ * Date: 02.04.2021  
+ * 
+ */
 
 
 // Require files
 require_once('config.inc.php');
-
-
-// Redirections 
-
 
 /* CONNEXION BD*/
 function connectDB()
@@ -35,7 +38,7 @@ function connectDB()
 //---------------------------------------------------------------- INSERT -------------------------------------------------------------
 
 
-// Relation entre la table t_post et t_media
+/* Relation entre la table t_post et t_media (transaction utilisé) */
 function createMediaAndPost($comment, $mediaType, $filename)
 {
     // Transaction 
@@ -69,7 +72,7 @@ function createMediaAndPost($comment, $mediaType, $filename)
 }
 
 
-// Ajouter le post de l'user dans la BD
+/* Ajouter le post de l'user dans la BD */
 function InsertPost($comment)
 {
 
@@ -97,7 +100,7 @@ function InsertPost($comment)
     return $answer;
 }
 
-// Ajouter plusieurs médias pour un post
+/* Ajouter plusieurs médias pour un post */
 function InsertMultipleMedia($mediaType_array, $filename_array, $idPost, $laDate)
 {
     // ajouter chaque média d'un post dans la base
@@ -106,7 +109,7 @@ function InsertMultipleMedia($mediaType_array, $filename_array, $idPost, $laDate
     }
 }
 
-// Ajouter le média choisi dans la BD
+/* Ajouter le média choisi dans la BD */
 function InsertMedia($mediaType, $filename, $idPost, $laDate)
 {
     static $req = null;
@@ -135,7 +138,7 @@ function InsertMedia($mediaType, $filename, $idPost, $laDate)
 
 //---------------------------------------------------------------- READ -------------------------------------------------------------
 
-// Récupérer l'id du post pour l'insérer dans le média en clé étrangère
+/* Récupérer l'id du post pour l'insérer dans le média en clé étrangère */
 function ReadPostByComAndDate($commentaire, $dateCreation)
 {
     static $req = null;
@@ -160,7 +163,7 @@ function ReadPostByComAndDate($commentaire, $dateCreation)
 }
 
 
-// Parcourir la table t_post pour afficher par la suite tous les posts
+/* Parcourir la table t_post pour afficher par la suite tous les posts */
 function ReadPost()
 {
     static $req = null;
@@ -182,7 +185,7 @@ function ReadPost()
     return $answer;
 }
 
-// Récuperer les médias d'un post en fonction de idPost
+/* Récuperer les médias d'un post en fonction de idPost */
 function ReadMediasByPostId($idPost)
 {
     static $req = null;
@@ -206,9 +209,10 @@ function ReadMediasByPostId($idPost)
     return $answer;
 }
 
+/* Lire un post en fonction de son id */
 function ReadPostById($idPost)
 {
-    
+
     static $req = null;
 
     $sql = "SELECT * FROM t_post WHERE idPost = :idPost ";
@@ -243,7 +247,7 @@ function UpdatePostByID($idPost, $commentaire)
 
     static $req = null;
 
-    $sql = " UPDATE t_post SET commentaire = :commentaire, modificationDate = :dateDeModif WHERE idPost = :idPost ";
+    $sql = "UPDATE t_post SET commentaire = :commentaire, modificationDate = :dateDeModif WHERE idPost = :idPost";
 
     if ($req == null) {
         $req = connectDB()->prepare($sql);
@@ -252,45 +256,6 @@ function UpdatePostByID($idPost, $commentaire)
     try {
         $req->bindParam(":idPost", $idPost, PDO::PARAM_INT);
         $req->bindParam(":commentaire", $commentaire, PDO::PARAM_STR);
-        $req->bindParam(":dateDeModif", $dateModification, PDO::PARAM_STR);
-
-        $answer = $req->execute();
-        $conn->commit();
-    } catch (PDOException $e) {
-        echo $e->getMessage();
-        $conn->rollback();
-    }
-    return $answer;
-}
-
-/*Fonction qui met à jour les médias en fonction de l'ID du post concerné (transaction utilisé)
-*
-* S'il y a une modification des médias, on supprime les anciens médias et on les remplace par les nouveaux.
-*/
-function UpdateMediaByPostID($idPost, $type, $filename)
-{
-    // supprime tous les médias du post
-    DeleteMediasByPostID($idPost);
-
-    // transaction
-    $conn = connectDB();
-    $conn->beginTransaction();
-
-    $dateModification = date("Y-m-d H:i:s");
-
-    static $req = null;
-
-    // Pas UPDATE car trop compliqué si il y avait 2 médias et que la personne veut en ajouter 3
-    $sql = "INSERT INTO t_media(typeMedia, nomMedia, creationDate) VALUES(:typeMedia, :nom, :dateDeModif)  WHERE postUtilise = :idPost ";
-
-    if ($req == null) {
-        $req = connectDB()->prepare($sql);
-    }
-    $answer = false;
-    try {
-        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT);
-        $req->bindParam(":typeMedia", $type, PDO::PARAM_STR);
-        $req->bindParam(":nom", $filename, PDO::PARAM_STR);
         $req->bindParam(":dateDeModif", $dateModification, PDO::PARAM_STR);
 
         $answer = $req->execute();
@@ -330,21 +295,21 @@ function DeletePostByID($idPost)
 }
 
 /*Fonction qui supprime les médias en fonction de l'ID du post  (utilisation de transaction)*/
-function DeleteMediasByPostID($idPost)
+function DeleteMediasByID($idMedia)
 {
     $conn = connectDB();
     $conn->beginTransaction();
 
     static $req = null;
 
-    $sql = "DELETE FROM t_media WHERE postUtilise = :idPost ";
+    $sql = "DELETE FROM t_media WHERE idMedia = :idMedia ";
 
     if ($req == null) {
         $req = connectDB()->prepare($sql);
     }
     $answer = false;
     try {
-        $req->bindParam(":idPost", $idPost, PDO::PARAM_INT);
+        $req->bindParam(":idMedia", $idMedia, PDO::PARAM_INT);
 
         $answer = $req->execute();
         $conn->commit();
@@ -383,6 +348,8 @@ function DisplayPost()
         $comment = $record['commentaire'];
         // Récupérer la date de création de chaque post
         $date = $record['creationDate'];
+        // Récupérer la date de création de chaque post
+        $dateModif = $record['modificationDate'];
 
         // parcourir les médias et ajouter celles qui dépende le l'id actuelle
         $medias = ReadMediasByPostId($idPost);
@@ -391,7 +358,8 @@ function DisplayPost()
             "idPost" => $idPost,
             "commentaire" => $comment,
             "date" => $date,
-            "medias" => $medias
+            "medias" => $medias,
+            "dateModif" => $dateModif
         );
 
         array_push($postsArray, $structureArray);

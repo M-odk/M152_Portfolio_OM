@@ -4,7 +4,7 @@
  * 
  * ODAKA M. || CFPT-I || IFDA-P3A
  * 
- * Date: 
+ * Date: 02.04.2021  
  * 
  * 
  * GIT Repostiory : https://github.com/M-odk/M152_Portfolio_OM.git
@@ -18,5 +18,5 @@ define("DBNAME", "bd_portfoliom152");
 define("DBUSER", "userM152");
 define("DBPWD", "m152");  
 
-// define("DBUSER", "root"); 
+// define("DBUSER", "root");
 // define("DBPWD", "root");
