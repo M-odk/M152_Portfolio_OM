@@ -1,3 +1,6 @@
+
+<?php
+
 /*
  * Page : Page d'accueil où on affiche les posts 
  * 
@@ -5,8 +8,8 @@
  * 
  * Date: 02.04.2021  
  * 
- */
-<?php
+ */ 
+
 require_once('backend/functions.php');
 
 //  fonction pour lire les posts

@@ -23,6 +23,7 @@ $commModifie = filter_input(INPUT_POST, 'description',  FILTER_SANITIZE_STRING);
 $check = filter_input(INPUT_POST, "ckbMedia", FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
 $error = null;
+$files = null;
 
 // récupérer le commentaire du post
 $commentaire = ReadPostById($idPost);
@@ -31,24 +32,35 @@ $medias = ReadMediasByPostId($idPost);
 if (isset($submit)) {
 
     $files = $_FILES['mediaFiles'];
+    $files_size = count($files['size']);
 
-    /* Vérifier s'il n'y a aucun problème avant d'envoyer dans la bd */
-    for ($i = 0; $i < count($files['name']); $i++) {
+    // Vérifier si l'user à choisi de nouvelles images pour les ajouter
+    if ($files_size == 1) {
+        $error = null;
+    }
+    else{
+        
+        /* Vérifier s'il n'y a aucun problème avant d'envoyer dans la bd */
+        for ($i = 0; $i < count($files['name']); $i++) {
 
-        // vérifier le type du fichier 
-        if (strpos($files['type'][$i], "image") === false && strpos($files['type'][$i], "video") === false && strpos($files['type'][$i], "audio") === false) {
-            $error = "Vous n'avez pas rentré le bon format de fichier.";
-            echo $error;
-            break;
-        }
+            
+            
+            // vérifier le type du fichier 
+            if (strpos($files['type'][$i], "image") === false && strpos($files['type'][$i], "video") === false && strpos($files['type'][$i], "audio") === false) {
+                $error = "Vous n'avez pas rentré le bon format de fichier.";
+                echo $error;
+                break;
+            }
 
-        // Verifier la taille du fichier
-        if ($files['size'][$i] > $MAX_SIZE_FILE) {
-            $error = "Vous avez dépassé la taille maximale de " . $MAX_SIZE_FILE . " bytes.";
-            echo $error;
-            break;
+                // Verifier la taille du fichier
+            if ($files['size'][$i] > $MAX_SIZE_FILE) {
+                $error = "Vous avez dépassé la taille maximale de " . $MAX_SIZE_FILE . " bytes.";
+                echo $error;
+                break;
+            }
         }
     }
+
     // On regarde s'il n'y a pas d'erreur et à ce moment là on peut envoyer les modifications.
     if ($error == null) {
 
